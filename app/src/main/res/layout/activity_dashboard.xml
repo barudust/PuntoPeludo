@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="24dp"
+    tools:context=".DashboardActivity">
+
+    <TextView
+        android:id="@+id/textViewBienvenida"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="\nBienvenido"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/textViewSucursal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sucursal: Matriz"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/textViewBienvenida"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonRegistrarVenta"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:text="Registrar Venta"
+        android:textSize="18sp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintVertical_bias="0.4" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonGestionInventario"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp"
+        android:text="Gestión de Inventario"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/buttonRegistrarVenta"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonGestionClientes"
+        android:layout_width="0dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="16dp"
+        android:text="Gestión de Clientes"
+        android:textSize="18sp"
+        app:layout_constraintTop_toBottomOf="@id/buttonGestionInventario"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

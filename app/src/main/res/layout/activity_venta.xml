@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".VentaActivity">
+
+    <TextView
+        android:id="@+id/textViewTituloVenta"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="72dp"
+        android:text="Registrar Venta"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Spinner
+        android:id="@+id/spinnerCliente"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/spinner_background"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textViewTituloVenta" />
+
+    <AutoCompleteTextView
+        android:id="@+id/autoCompleteProducto"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/edittext_background"
+        android:hint="Buscar Producto (Nombre o Código)..."
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/spinnerCliente" />
+
+    <Button
+        android:id="@+id/buttonFinalizarVenta"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
+        android:layout_margin="16dp"
+        android:text="Finalizar Venta"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/layoutResumen"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@id/buttonFinalizarVenta"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/labelDescuento"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Descuento Especial ($):"
+                android:textSize="16sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <EditText
+                android:id="@+id/editTextDescuento"
+                android:layout_width="120dp"
+                android:layout_height="48dp"
+                android:background="@drawable/edittext_background"
+                android:hint="0.00"
+                android:inputType="numberDecimal"
+                android:padding="8dp"
+                android:textAlignment="textEnd"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <EditText
+            android:id="@+id/editTextMotivo"
+            android:layout_width="match_parent"
+            android:layout_height="54dp"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/edittext_background"
+            android:hint="Motivo del descuento (opcional)..."
+            android:inputType="text"
+            android:padding="8dp"
+            android:textSize="14sp" />
+
+        <TextView
+            android:id="@+id/textViewTotal"
+            android:layout_width="match_parent"
+            android:layout_height="49dp"
+            android:layout_marginTop="8dp"
+            android:text="TOTAL: $0.00"
+            android:textAlignment="textEnd"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewCarrito"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:background="@drawable/list_background"
+        android:padding="8dp"
+        app:layout_constraintBottom_toTopOf="@id/layoutResumen"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/autoCompleteProducto"
+        app:layout_constraintVertical_bias="1.0"
+        tools:listitem="@android:layout/simple_list_item_2" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
