@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tvTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nuevo Producto"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <TextView
+            android:id="@+id/lblTipo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Qué tipo de producto es?"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/tvTitulo"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <Spinner
+            android:id="@+id/spTipo"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginTop="8dp"
+            android:background="@android:drawable/btn_dropdown"
+            app:layout_constraintTop_toBottomOf="@id/lblTipo"/>
+
+        <EditText
+            android:id="@+id/etNombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombre del Producto (Ej. Gamas Cerdo Inicio)"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/spTipo"/>
+
+        <LinearLayout
+            android:id="@+id/layoutAtributos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/etNombre">
+
+            <LinearLayout
+                android:id="@+id/rowMarca"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <Spinner android:id="@+id/spMarca" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"/>
+                <ImageButton android:id="@+id/btnAddMarca" android:layout_width="40dp" android:layout_height="40dp" android:src="@android:drawable/ic_input_add" android:contentDescription="Agregar Marca"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rowCategoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <Spinner android:id="@+id/spCategoria" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"/>
+                <ImageButton android:id="@+id/btnAddCategoria" android:layout_width="40dp" android:layout_height="40dp" android:src="@android:drawable/ic_input_add" android:contentDescription="Agregar Categoría"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rowSubcategoria"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <Spinner android:id="@+id/spSubcategoria" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"/>
+                <ImageButton android:id="@+id/btnAddSubcategoria" android:layout_width="40dp" android:layout_height="40dp" android:src="@android:drawable/ic_input_add" android:contentDescription="Agregar Subcategoría"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutDetallesAlimento"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/rowEspecie"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <Spinner android:id="@+id/spEspecie" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"/>
+                    <ImageButton android:id="@+id/btnAddEspecie" android:layout_width="40dp" android:layout_height="40dp" android:src="@android:drawable/ic_input_add" android:contentDescription="Agregar Especie"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/rowEtapa"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <Spinner android:id="@+id/spEtapa" android:layout_width="0dp" android:layout_height="50dp" android:layout_weight="1"/>
+                    <ImageButton android:id="@+id/btnAddEtapa" android:layout_width="40dp" android:layout_height="40dp" android:src="@android:drawable/ic_input_add" android:contentDescription="Agregar Etapa"/>
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/lblPrecios"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Precios y Presentación"
+            android:textStyle="bold"
+            android:layout_marginTop="24dp"
+            app:layout_constraintTop_toBottomOf="@id/layoutAtributos"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <LinearLayout
+            android:id="@+id/rowPrecioBase"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/lblPrecios">
+
+            <EditText
+                android:id="@+id/etPrecioBase"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Precio (Paquete)"
+                android:inputType="numberDecimal"/>
+
+            <Spinner
+                android:id="@+id/spUnidad"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"/>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/etContenido"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Contenido Neto (Ej. 40 si son 40kg)"
+            android:inputType="numberDecimal"
+            app:layout_constraintTop_toBottomOf="@id/rowPrecioBase"/>
+
+        <EditText
+            android:id="@+id/etStockMinimo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Stock Mínimo para Alerta (Ej. 5)"
+            android:inputType="numberDecimal"
+            app:layout_constraintTop_toBottomOf="@id/etContenido"/>
+
+        <CheckBox
+            android:id="@+id/cbGranel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="¿Se vende suelto (kilos/piezas)?"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/etStockMinimo"
+            app:layout_constraintStart_toStartOf="parent"/>
+
+        <EditText
+            android:id="@+id/etPrecioGranel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Precio Unitario (Kilo/Pieza)"
+            android:inputType="numberDecimal"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/cbGranel"/>
+
+        <Button
+            android:id="@+id/btnGuardar"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="GUARDAR PRODUCTO"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#4CAF50"
+            app:layout_constraintTop_toBottomOf="@id/etPrecioGranel"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

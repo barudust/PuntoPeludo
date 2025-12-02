@@ -1,14 +1,14 @@
 package com.example.puntopeludo
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import kotlinx.coroutines.launch
-
-
 
 class InventarioActivity : AppCompatActivity() {
 
@@ -18,36 +18,41 @@ class InventarioActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_inventario)
 
-        // 1. Configurar el RecyclerView
+        // 1. Configurar Recycler
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerViewInventario)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
-        // Iniciamos con lista vacía
         adapter = ProductoAdapter(emptyList())
         recyclerView.adapter = adapter
 
-        // 2. Pedir datos al Backend
-        cargarProductos()
+        // 2. Botón para Agregar Producto (+)
+        val fab = findViewById<FloatingActionButton>(R.id.fabAgregar)
+        fab.setOnClickListener {
+            val intent = Intent(this, CrearProductoActivity::class.java)
+            startActivity(intent)
+        }
+
+        // 3. Cargar datos
+        cargarInventario()
     }
 
-    private fun cargarProductos() {
+    override fun onResume() {
+        super.onResume()
+        // Recargamos la lista al volver de "Crear Producto"
+        cargarInventario()
+    }
+
+    private fun cargarInventario() {
         lifecycleScope.launch {
             try {
-                // Llamada a la API
-                val listaProductos = RetrofitClient.instance.obtenerProductos()
-                val sucursalId = 1
-                val inventario = RetrofitClient.instance.obtenerInventarioSucursal(sucursalId)
+                // Usamos la sucursal 1 por defecto para pruebas
+                val lista = RetrofitClient.instance.obtenerInventarioSucursal(1)
+                adapter.actualizarLista(lista)
 
-                adapter.actualizarLista(inventario)
-
-
-                if (listaProductos.isEmpty()) {
-                    Toast.makeText(this@InventarioActivity, "No hay productos registrados", Toast.LENGTH_SHORT).show()
+                if (lista.isEmpty()) {
+                    Toast.makeText(this@InventarioActivity, "Inventario vacío", Toast.LENGTH_SHORT).show()
                 }
-
             } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this@InventarioActivity, "Error al cargar inventario: ${e.message}", Toast.LENGTH_LONG).show()
+                Toast.makeText(this@InventarioActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -1,37 +1,36 @@
 package com.example.puntopeludo
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.google.android.material.button.MaterialButton
+import android.widget.Button
+import androidx.appcompat.app.AppCompatActivity
 
 class DashboardActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        // --- Encontramos los TRES botones por su ID ---
-        val botonVenta = findViewById<MaterialButton>(R.id.buttonRegistrarVenta)
-        val botonInventario = findViewById<MaterialButton>(R.id.buttonGestionInventario) // ¡OJO! Asegúrate que este ID sea correcto
-        val botonClientes = findViewById<MaterialButton>(R.id.buttonGestionClientes)
+        val btnVenta = findViewById<Button>(R.id.btnRegistrarVenta) // Asegúrate que el ID en el XML sea este
+        val btnInventario = findViewById<Button>(R.id.btnGestionInventario) // Y este
+        val btnClientes = findViewById<Button>(R.id.btnGestionClientes) // Y este
 
-
-        // --- Asignamos la acción al botón de Venta ---
-        botonVenta.setOnClickListener {
-            val intent = Intent(this, VentaActivity::class.java)
-            startActivity(intent)
-        }
-
-        // --- Asignamos la acción al botón de Inventario ---
-        botonInventario.setOnClickListener {
+        // 1. Navegar a Inventario
+        btnInventario.setOnClickListener {
+            // Si 'InventarioActivity' aparece en rojo, verifica que el archivo InventarioActivity.kt exista
             val intent = Intent(this, InventarioActivity::class.java)
             startActivity(intent)
         }
 
-        // --- (NUEVO) Asignamos la acción al botón de Clientes ---
-        botonClientes.setOnClickListener {
-            val intent = Intent(this, ClientesActivity::class.java)
-            startActivity(intent)
+        // 2. Navegar a Venta (Aún no la creamos, pero dejamos el espacio)
+        btnVenta.setOnClickListener {
+            // val intent = Intent(this, VentaActivity::class.java)
+            // startActivity(intent)
+        }
+
+        // 3. Navegar a Clientes (Aún no la creamos)
+        btnClientes.setOnClickListener {
+            // val intent = Intent(this, ClientesActivity::class.java)
+            // startActivity(intent)
         }
     }
 }
