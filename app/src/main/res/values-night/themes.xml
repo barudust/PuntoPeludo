@@ -1,23 +1,22 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Theme.PuntoPeludo" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+    <!-- Base application theme for dark mode. -->
+    <style name="Base.Theme.PuntoPeludo" parent="Theme.Material3.DayNight.NoActionBar">
 
-        <item name="colorPrimary">@color/color_primario_cielo</item>
-        <item name="colorPrimaryVariant">@color/color_primario_cielo</item>
+        <!-- Colores primarios con la nueva paleta -->
+        <item name="colorPrimary">@color/azul_medio</item>
+        <item name="colorPrimaryVariant">@color/azul_claro</item>
         <item name="colorOnPrimary">@color/white</item>
 
-        <item name="colorSecondary">@color/color_enfasis_menta</item>
-        <item name="colorSecondaryVariant">@color/color_enfasis_menta</item>
+        <!-- Colores secundarios con la nueva paleta -->
+        <item name="colorSecondary">@color/azul_claro</item>
+        <item name="colorSecondaryVariant">@color/crema</item>
         <item name="colorOnSecondary">@color/black</item>
 
-        <item name="android:windowBackground">@color/color_fondo_claro</item>
+        <!-- Fondo más oscuro para el modo noche -->
+        <item name="android:colorBackground">@color/azul_oscuro</item>
 
-        <item name="android:fontFamily">@font/montserrat</item>
-
-        <item name="android:textColor">@color/texto_principal</item>
-
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
-
-        <item name="android:textColorHint">@color/color_pista_texto</item>
-
+        <!-- Customize your dark theme here. -->
     </style>
+
+    <style name="Theme.PuntoPeludo" parent="Base.Theme.PuntoPeludo" />
 </resources>

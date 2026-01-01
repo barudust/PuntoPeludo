@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="color_primario_cielo">#5DADE2</color>
-    <color name="color_enfasis_menta">#48C9B0</color>
-    <color name="color_fondo_claro">#F4F6F6</color>
-
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <color name="texto_principal">#34495E</color>
-    <color name="texto_secundario">#566573</color>
-    <color name="color_pista_texto">#85929E</color>
+    <!-- Tu NUEVA paleta de colores -->
+    <color name="azul_oscuro">#213448</color>
+    <color name="azul_medio">#547792</color>
+    <color name="azul_claro">#94B4C1</color>
+    <color name="crema">#EAE0CF</color>
+    <!-- Alias para compatibilidad con layouts antiguos -->
+    <color name="texto_principal">@color/azul_oscuro</color>
+    <color name="texto_secundario">@color/azul_medio</color>
+
 </resources>

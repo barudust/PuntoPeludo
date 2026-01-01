@@ -1,42 +1,303 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:padding="24dp"
+    android:background="@drawable/gradient_background"
     tools:context=".DashboardActivity">
 
+    <!-- 1. ENCABEZADO SUPERIOR -->
+
     <TextView
+        android:id="@+id/titleHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="24dp"
+        android:text="Punto Peludo"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/subtitleHeader"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@id/logoHeader"
+        app:layout_constraintTop_toTopOf="@id/logoHeader"
+        app:layout_constraintVertical_chainStyle="packed" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardGestionInventario"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="28dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="@id/cardRegistrarVenta"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/cardRegistrarVenta"
+        app:layout_constraintTop_toBottomOf="@id/cardRegistrarVenta">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/iconInventario"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Icono de inventario"
+                android:src="@drawable/box_open_2_svgrepo_com"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/azul_medio" />
+
+            <TextView
+                android:id="@+id/titleInventario"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Gestión de Inventario"
+                android:textColor="@color/azul_oscuro"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/iconInventario"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iconInventario"
+                app:layout_constraintTop_toTopOf="@id/iconInventario" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardRegistrarVenta"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="@id/titleHeader"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/logoHeader"
+        app:layout_constraintTop_toBottomOf="@+id/menuTitle">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/iconVenta"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Icono de venta"
+                android:src="@drawable/sale_svgrepo_com"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/azul_medio" />
+
+            <TextView
+                android:id="@+id/titleVenta"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Registrar Venta"
+                android:textColor="@color/azul_oscuro"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/iconVenta"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iconVenta"
+                app:layout_constraintTop_toTopOf="@id/iconVenta" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardGestionClientes"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        app:layout_constraintEnd_toEndOf="@id/cardGestionInventario"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/cardGestionInventario"
+        app:layout_constraintTop_toBottomOf="@id/cardGestionInventario">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <ImageView
+                android:id="@+id/iconClientes"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:contentDescription="Icono de clientes"
+                android:src="@drawable/user_pen_svgrepo_com"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/azul_medio" />
+
+            <TextView
+                android:id="@+id/titleClientes"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Gestión de Clientes"
+                android:textColor="@color/azul_oscuro"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/iconClientes"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@id/iconClientes"
+                app:layout_constraintTop_toTopOf="@id/iconClientes" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <ImageView
+        android:id="@+id/logoHeader"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="72dp"
+        android:contentDescription="Logo"
+        android:src="@drawable/icon1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/menuTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="2dp"
+        android:text="Selecciona una opción"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/cardRegistrarVenta"
+        app:layout_constraintEnd_toEndOf="@id/titleHeader"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/logoHeader"
+        app:layout_constraintTop_toBottomOf="@+id/cardResumen" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardResumen"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        app:cardBackgroundColor="#4DFFFFFF"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:layout_constraintEnd_toEndOf="@id/titleHeader"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/logoHeader"
+        app:layout_constraintTop_toBottomOf="@id/logoHeader">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/resumenTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Resumen del Día"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/ventasLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Ventas:"
+                android:textColor="@color/crema"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/resumenTitle" />
+
+            <TextView
+                android:id="@+id/ventasValor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="$0.00"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/ventasLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/ventasLabel" />
+
+            <TextView
+                android:id="@+id/stockLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Productos bajos en stock:"
+                android:textColor="@color/crema"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/ventasLabel" />
+
+            <TextView
+                android:id="@+id/stockValor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@id/stockLabel"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/stockLabel" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/subtitleHeader"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Panel de Administración"
+        android:textColor="@color/azul_claro"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@id/logoHeader"
+        app:layout_constraintEnd_toEndOf="@id/titleHeader"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@id/titleHeader"
+        app:layout_constraintTop_toBottomOf="@id/titleHeader" />
+
+
+    <!-- 2. NUEVA TARJETA DE RESUMEN -->
+
+
+    <!-- 3. TÍTULO DE LA SECCIÓN DE MENÚ (REPOSICIONADO) -->
+
+
+    <!-- 4. TARJETAS DE OPCIONES (CONSTRAINTS CORREGIDOS) -->
+
+    <!-- 5. PIE DE PÁGINA PARA EQUILIBRAR -->
+    <TextView
+        android:id="@+id/footerText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Punto Peludo"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="48dp"/>
+        android:layout_marginBottom="24dp"
+        android:alpha="0.7"
+        android:text="Versión 1.0"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/btnRegistrarVenta"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Registrar Venta"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/btnGestionInventario"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Gestión de Inventario"
-        android:textSize="18sp"
-        android:layout_marginBottom="16dp"/>
-
-    <Button
-        android:id="@+id/btnGestionClientes"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:text="Gestión de Clientes"
-        android:textSize="18sp"/>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

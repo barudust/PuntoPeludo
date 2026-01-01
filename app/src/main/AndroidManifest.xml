@@ -32,7 +32,7 @@
         <activity
             android:name=".LoginActivity"
             android:exported="true"
-            android:theme="@style/Theme.PuntoPeludo.NoActionBar" >
+            android:theme="@style/Theme.PuntoPeludo" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

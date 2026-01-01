@@ -1,36 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp"
-    android:layout_marginBottom="8dp"
-    android:background="@drawable/list_background">
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    app:cardBackgroundColor="@color/azul_medio"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="2dp"
+    tools:backgroundTint="@color/azul_medio">
 
-    <TextView
-        android:id="@+id/textViewNombreProducto"
-        android:layout_width="wrap_content"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Nombre del Producto"
-        android:textColor="@color/texto_principal"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/textViewStockBultos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stock (Bultos): 0"
-        android:textSize="16sp"
-        android:textColor="@color/texto_secundario" />
+        <!-- Nombre del Producto -->
+        <TextView
+            android:id="@+id/textViewNombreProducto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btnEditarProducto"
+            tools:text="Gamas Cerdo Inicio" />
 
-    <TextView
-        android:id="@+id/textViewStockKilos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Stock (Kilos): 0.0 kg"
-        android:textColor="@color/texto_secundario"
-        android:textSize="16sp" />
+        <!-- Stock en Bultos -->
+        <TextView
+            android:id="@+id/textViewStockBultos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewNombreProducto"
+            tools:text="15" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/labelBultos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="Bultos"
+            android:textColor="@color/crema"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@id/textViewStockBultos"
+            app:layout_constraintStart_toEndOf="@id/textViewStockBultos"
+            app:layout_constraintTop_toTopOf="@id/textViewStockBultos" />
+
+        <!-- Stock en Kilos (si aplica) -->
+        <TextView
+            android:id="@+id/textViewStockKilos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/labelBultos"
+            app:layout_constraintStart_toEndOf="@id/labelBultos"
+            app:layout_constraintTop_toTopOf="@id/labelBultos"
+            tools:text="25.5"
+            tools:visibility="visible"/>
+
+        <TextView
+            android:id="@+id/labelKilos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="kg (suelto)"
+            android:textColor="@color/crema"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@id/textViewStockKilos"
+            app:layout_constraintStart_toEndOf="@id/textViewStockKilos"
+            app:layout_constraintTop_toTopOf="@id/textViewStockKilos"
+            tools:visibility="visible"/>
+
+        <!-- Botón para Editar -->
+        <ImageButton
+            android:id="@+id/btnEditarProducto"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Editar producto"
+            android:src="@drawable/edit_pencil_01_svgrepo_com"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/white" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</com.google.android.material.card.MaterialCardView>
