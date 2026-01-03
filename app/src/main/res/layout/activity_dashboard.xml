@@ -1,303 +1,225 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/gradient_background"
     tools:context=".DashboardActivity">
 
-    <!-- 1. ENCABEZADO SUPERIOR -->
+    <!-- 1. ENCABEZADO DE USUARIO E INFORMACIÓN -->
 
     <TextView
-        android:id="@+id/titleHeader"
+        android:id="@+id/tvUserInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="24dp"
-        android:text="Punto Peludo"
+        android:layout_marginStart="28dp"
+        android:layout_marginEnd="16dp"
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/subtitleHeader"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@id/logoHeader"
-        app:layout_constraintTop_toTopOf="@id/logoHeader"
-        app:layout_constraintVertical_chainStyle="packed" />
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardGestionInventario"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="28dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:layout_constraintEnd_toEndOf="@id/cardRegistrarVenta"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/cardRegistrarVenta"
-        app:layout_constraintTop_toBottomOf="@id/cardRegistrarVenta">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
-
-            <ImageView
-                android:id="@+id/iconInventario"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:contentDescription="Icono de inventario"
-                android:src="@drawable/box_open_2_svgrepo_com"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/azul_medio" />
-
-            <TextView
-                android:id="@+id/titleInventario"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="Gestión de Inventario"
-                android:textColor="@color/azul_oscuro"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/iconInventario"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iconInventario"
-                app:layout_constraintTop_toTopOf="@id/iconInventario" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardRegistrarVenta"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:layout_constraintEnd_toEndOf="@id/titleHeader"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/logoHeader"
-        app:layout_constraintTop_toBottomOf="@+id/menuTitle">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
-
-            <ImageView
-                android:id="@+id/iconVenta"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:contentDescription="Icono de venta"
-                android:src="@drawable/sale_svgrepo_com"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/azul_medio" />
-
-            <TextView
-                android:id="@+id/titleVenta"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="Registrar Venta"
-                android:textColor="@color/azul_oscuro"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/iconVenta"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iconVenta"
-                app:layout_constraintTop_toTopOf="@id/iconVenta" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardGestionClientes"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:clickable="true"
-        android:focusable="true"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:layout_constraintEnd_toEndOf="@id/cardGestionInventario"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/cardGestionInventario"
-        app:layout_constraintTop_toBottomOf="@id/cardGestionInventario">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
-
-            <ImageView
-                android:id="@+id/iconClientes"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:contentDescription="Icono de clientes"
-                android:src="@drawable/user_pen_svgrepo_com"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/azul_medio" />
-
-            <TextView
-                android:id="@+id/titleClientes"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:text="Gestión de Clientes"
-                android:textColor="@color/azul_oscuro"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/iconClientes"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/iconClientes"
-                app:layout_constraintTop_toTopOf="@id/iconClientes" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <ImageView
-        android:id="@+id/logoHeader"
-        android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="72dp"
-        android:contentDescription="Logo"
-        android:src="@drawable/icon1"
+        app:layout_constraintBottom_toTopOf="@+id/tvSucursalInfo"
+        app:layout_constraintEnd_toStartOf="@+id/btnCerrarSesion"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        tools:text="¡Bienvenido!" />
 
     <TextView
-        android:id="@+id/menuTitle"
+        android:id="@+id/tvSucursalInfo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginBottom="2dp"
-        android:text="Selecciona una opción"
+        android:layout_marginTop="8dp"
+        android:text="📍 Sucursal Centro"
         android:textColor="@color/white"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/cardRegistrarVenta"
-        app:layout_constraintEnd_toEndOf="@id/titleHeader"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/logoHeader"
-        app:layout_constraintTop_toBottomOf="@+id/cardResumen" />
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/cardNuevaVenta"
+        app:layout_constraintEnd_toEndOf="@id/tvUserInfo"
+        app:layout_constraintStart_toStartOf="@id/tvUserInfo"
+        app:layout_constraintTop_toBottomOf="@id/tvUserInfo" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnCerrarSesion"
+        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:contentDescription="Cerrar Sesión"
+        app:backgroundTint="#88547792"
+        app:icon="@drawable/off_on_power"
+        app:iconTint="@color/white"
+        app:layout_constraintBottom_toBottomOf="@id/tvUserInfo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvUserInfo" />
+
+
+    <!-- 2. BOTÓN PRINCIPAL DE ACCIÓN: NUEVA VENTA -->
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cardResumen"
+        android:id="@+id/cardNuevaVenta"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        app:cardBackgroundColor="#4DFFFFFF"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="0dp"
-        app:layout_constraintEnd_toEndOf="@id/titleHeader"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/logoHeader"
-        app:layout_constraintTop_toBottomOf="@id/logoHeader">
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="32dp"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardBackgroundColor="@color/azul_medio"
+        app:cardCornerRadius="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/gridContainer"
+        app:layout_constraintDimensionRatio="2:1"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvSucursalInfo">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/shopping_cart_svgrepo_com"
+                app:tint="@color/white"
+                tools:ignore="ContentDescription" />
 
             <TextView
-                android:id="@+id/resumenTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Resumen del Día"
-                android:textColor="@color/white"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <TextView
-                android:id="@+id/ventasLabel"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:text="Ventas:"
-                android:textColor="@color/crema"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/resumenTitle" />
-
-            <TextView
-                android:id="@+id/ventasValor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="$0.00"
-                android:textColor="@color/white"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/ventasLabel"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/ventasLabel" />
-
-            <TextView
-                android:id="@+id/stockLabel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="Productos bajos en stock:"
-                android:textColor="@color/crema"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/ventasLabel" />
-
-            <TextView
-                android:id="@+id/stockValor"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
+                android:text="Nueva Venta"
                 android:textColor="@color/white"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="@id/stockLabel"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/stockLabel" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
+                android:textSize="20sp"
+                android:textStyle="bold" />
+        </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <TextView
-        android:id="@+id/subtitleHeader"
+    <!-- 3. CUADRÍCULA DE OPCIONES SECUNDARIAS -->
+
+    <ScrollView
+        android:id="@+id/gridContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Panel de Administración"
-        android:textColor="@color/azul_claro"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@id/logoHeader"
-        app:layout_constraintEnd_toEndOf="@id/titleHeader"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/titleHeader"
-        app:layout_constraintTop_toBottomOf="@id/titleHeader" />
-
-
-    <!-- 2. NUEVA TARJETA DE RESUMEN -->
-
-
-    <!-- 3. TÍTULO DE LA SECCIÓN DE MENÚ (REPOSICIONADO) -->
-
-
-    <!-- 4. TARJETAS DE OPCIONES (CONSTRAINTS CORREGIDOS) -->
-
-    <!-- 5. PIE DE PÁGINA PARA EQUILIBRAR -->
-    <TextView
-        android:id="@+id/footerText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
-        android:alpha="0.7"
-        android:text="Versión 1.0"
-        android:textColor="@color/white"
+        android:layout_marginTop="16dp"
+        android:overScrollMode="never"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toEndOf="@id/cardNuevaVenta"
+        app:layout_constraintStart_toStartOf="@id/cardNuevaVenta"
+        app:layout_constraintTop_toBottomOf="@id/cardNuevaVenta">
+
+        <GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:columnCount="2"
+            android:useDefaultMargins="true">
+
+            <!-- Fila 1 -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardInventario"
+                style="@style/DashboardCardStyle"
+                android:layout_width="134dp">
+
+                <LinearLayout
+                    style="@style/DashboardCardContent"
+                    android:layout_width="179dp">
+
+                    <ImageView
+                        style="@style/DashboardCardIcon"
+                        android:src="@drawable/box_open_2_svgrepo_com" />
+
+                    <TextView
+                        style="@style/DashboardCardText"
+                        android:text="Inventario" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardSurtir"
+                style="@style/DashboardCardStyle">
+
+                <LinearLayout style="@style/DashboardCardContent">
+
+                    <ImageView
+                        style="@style/DashboardCardIcon"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:src="@drawable/car_delivery" />
+
+                    <TextView
+                        style="@style/DashboardCardText"
+                        android:text="Surtir" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Fila 2 -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCaja"
+                style="@style/DashboardCardStyle">
+
+                <LinearLayout style="@style/DashboardCardContent">
+
+                    <ImageView
+                        style="@style/DashboardCardIcon"
+                        android:src="@drawable/money_bag_svgrepo_com" />
+
+                    <TextView
+                        style="@style/DashboardCardText"
+                        android:text="Caja" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCrearProducto"
+                style="@style/DashboardCardStyle">
+
+                <LinearLayout style="@style/DashboardCardContent">
+
+                    <ImageView
+                        style="@style/DashboardCardIcon"
+                        android:src="@drawable/add_svgrepo_com" />
+
+                    <TextView
+                        style="@style/DashboardCardText"
+                        android:text="Crear Producto" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Fila 3 -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardClientes"
+                style="@style/DashboardCardStyle">
+
+                <LinearLayout style="@style/DashboardCardContent">
+
+                    <ImageView
+                        style="@style/DashboardCardIcon"
+                        android:src="@drawable/user_pen_svgrepo_com" />
+
+                    <TextView
+                        style="@style/DashboardCardText"
+                        android:text="Clientes" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardReportes"
+                style="@style/DashboardCardStyle">
+
+                <LinearLayout style="@style/DashboardCardContent">
+
+                    <ImageView
+                        style="@style/DashboardCardIcon"
+                        android:src="@drawable/paper_svgrepo_com" />
+
+                    <TextView
+                        style="@style/DashboardCardText"
+                        android:text="Reportes" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </GridLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+
