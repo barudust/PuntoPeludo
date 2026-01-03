@@ -3,12 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Tu NUEVA paleta de colores -->
+
     <color name="azul_oscuro">#213448</color>
     <color name="azul_medio">#547792</color>
     <color name="azul_claro">#94B4C1</color>
     <color name="crema">#EAE0CF</color>
-    <!-- Alias para compatibilidad con layouts antiguos -->
+
     <color name="texto_principal">@color/azul_oscuro</color>
     <color name="texto_secundario">@color/azul_medio</color>
 
