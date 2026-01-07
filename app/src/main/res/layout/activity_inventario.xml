@@ -5,10 +5,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_background"
+    android:background="#F5F5F5"
     tools:context=".InventarioActivity">
 
-    <!-- 1. Encabezado -->
     <ImageButton
         android:id="@+id/btnBack"
         android:layout_width="48dp"
@@ -17,17 +16,16 @@
         android:layout_marginTop="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Volver"
-        android:src="@drawable/back_svgrepo_com"
+        android:src="@android:drawable/ic_menu_revert"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/white" />
-
+        app:tint="@color/azul_medio" />
     <TextView
         android:id="@+id/textViewTituloInventario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Gestión de Inventario"
-        android:textColor="@color/white"
+        android:textColor="#333333"
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
@@ -35,7 +33,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/btnBack" />
 
-    <!-- 2. Tarjeta de Búsqueda y Filtros -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardSearch"
         android:layout_width="0dp"
@@ -44,6 +41,7 @@
         android:layout_marginTop="16dp"
         android:layout_marginEnd="24dp"
         app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btnBack">
@@ -52,18 +50,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:padding="4dp">
 
             <SearchView
                 android:id="@+id/searchView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:closeIcon="@drawable/search_svgrepo_com"
-                android:commitIcon="@drawable/search_svgrepo_com"
                 android:iconifiedByDefault="false"
-                android:queryHint="Buscar por nombre o código..."
-                app:iconifiedByDefault="true" />
+                android:queryHint="Buscar..."
+                android:background="@null" />
 
             <ImageButton
                 android:id="@+id/btnFiltros"
@@ -72,13 +69,12 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Filtros"
                 android:padding="8dp"
-                android:src="@drawable/filter_svgrepo"
+                android:src="@android:drawable/ic_menu_sort_by_size"
                 app:tint="@color/azul_medio" />
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 3. Lista de Productos en Inventario -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewInventario"
         android:layout_width="0dp"
@@ -93,16 +89,25 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardSearch"
-        tools:listitem="@layout/item_producto" />
+        tools:listitem="@layout/item_producto_inventario" />
 
-    <!-- 4. Botón Flotante para Agregar Producto -->
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAgregar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="24dp"
         android:contentDescription="Agregar Nuevo Producto"
-        android:src="@drawable/add_svgrepo_com"
+        android:src="@android:drawable/ic_input_add"
         app:backgroundTint="@color/azul_medio"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

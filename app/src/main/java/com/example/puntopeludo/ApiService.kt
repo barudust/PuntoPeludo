@@ -6,6 +6,9 @@ import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.Response // <--- ESTA FALTABA
+import retrofit2.http.DELETE // <--- ESTA FALTABA
+import retrofit2.http.PATCH // <--- ESTA FALTABA
 
 interface ApiService {
     // Login
@@ -42,6 +45,20 @@ interface ApiService {
 
     @POST("etapas")
     suspend fun crearEtapa(@Body etapa: EtapaIn): Etapa
+
+    @GET("productos")
+    suspend fun obtenerProductos(): List<ProductoResponse>
+
+    // 1. ELIMINAR
+    @DELETE("productos/{id}")
+    suspend fun eliminarProducto(@Path("id") id: Int): Response<Void>
+
+    // 2. ACTUALIZAR STOCK (Usamos PATCH para modificar solo un campo)
+    @PATCH("productos/{id}")
+    suspend fun actualizarStock(
+        @Path("id") id: Int,
+        @Body datos: ActualizarStockRequest
+    ): ProductoResponse
 
 
 }
