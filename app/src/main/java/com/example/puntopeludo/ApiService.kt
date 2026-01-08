@@ -147,6 +147,14 @@ interface ApiService {
     suspend fun registrarDetalleVenta(@Body detalle: VentaDetalleIn): Any
     // CORRECTO PARA CAJA
 
+    @GET("corte/historial/{usuario_id}")
+    suspend fun getHistorialCortes(@Path("usuario_id") usuarioId: Int): List<HistorialCorteResponse>
+
+    // Búsqueda de catálogos
+
+
+    @POST("ventas/detalle")
+    suspend fun registrarDetalle(@Body detalle: VentaDetalleIn): Any
 
 
 

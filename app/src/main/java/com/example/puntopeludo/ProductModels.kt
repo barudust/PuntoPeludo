@@ -161,21 +161,43 @@ data class LoginResponse(
     @SerializedName("sucursal_id") val sucursalId: Int  // Debe ser igual al de Python
 )
 
-// Modelos para el proceso de Venta
+
+
+data class VentaResponse(
+    val id: Int,
+    val fecha: String,
+    val total: Double
+)
+
+data class HistorialCorteResponse(
+    val id: Int,
+    val fecha_apertura: String,
+    val fecha_cierre: String?,
+    val fondo_inicial: Double,
+    val ventas_totales: Double,
+    val efectivo_esperado: Double,
+    val efectivo_real: Double?,
+    val diferencia: Double?,
+    val estado: String
+)
+
+// En ProductModels.kt - Estas son las únicas que deben existir
+data class ProductoCarrito(
+    val producto_id: Int,      // Coincide con backend
+    val nombre: String,
+    var cantidad: Double,
+    val precio_unitario: Double, // Coincide con backend
+    val es_granel: Boolean
+)
+
 data class VentaIn(
     val sucursal_id: Int,
     val usuario_id: Int,
     val cliente_id: Int? = null,
     val corte_caja_id: Int? = null,
     val total: Double,
-    @SerializedName("descuento_especial_monto") val descuentoEspecialMonto: Double = 0.0,
-    @SerializedName("descuento_especial_motivo") val descuentoEspecialMotivo: String? = null
-)
-
-data class VentaResponse(
-    val id: Int,
-    val fecha: String,
-    val total: Double
+    val descuento_especial_monto: Double = 0.0,
+    val descuento_especial_motivo: String? = null
 )
 
 data class VentaDetalleIn(

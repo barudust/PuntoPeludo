@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -75,21 +76,58 @@ class CajaActivity : AppCompatActivity() {
     }
 
     private fun mostrarDialogoCierre() {
+        // Solo un campo para el efectivo contado
         val inputEfectivo = EditText(this).apply {
-            hint = "Efectivo físico contado"
+            hint = "Dinero total en caja ($)"
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
+            setPadding(50, 40, 50, 40)
         }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle("Cerrar Caja")
-            .setMessage("Ingresa cuánto dinero hay físicamente en caja:")
+            .setTitle("Cerrar Turno")
+            .setMessage("Ingresa el total de efectivo que hay en la gaveta.")
             .setView(inputEfectivo)
-            .setPositiveButton("Cerrar Turno") { _, _ ->
+            .setPositiveButton("Cerrar Caja") { _, _ ->
                 val contado = inputEfectivo.text.toString().toDoubleOrNull() ?: 0.0
-                efectuarCierre(contado)
+                ejecutarCierreBackend(contado)
             }
             .setNegativeButton("Cancelar", null)
             .show()
+    }
+
+    private fun ejecutarCierreBackend(fisico: Double) {
+        val corteId = idCorteActual ?: return
+
+        lifecycleScope.launch {
+            try {
+                val req = CierreCajaReq(
+                    corte_id = corteId,
+                    efectivo_real = fisico, // Lo que el cajero contó
+                    monto_retirado = 0.0    // Enviamos 0 por ahora para simplificar
+                )
+
+                val resumen = RetrofitClient.instance.cerrarCaja(req)
+
+                // Mostrar si hubo descuadre
+                val diferencia = resumen.diferencia ?: 0.0
+                val mensaje = when {
+                    diferencia == 0.0 -> "✅ Caja cuadrada perfectamente."
+                    diferencia > 0.0 -> "✅ Caja cerrada. Sobrante: $$diferencia"
+                    else -> "⚠️ Caja cerrada con FALTANTE: $$diferencia"
+                }
+
+                Toast.makeText(this@CajaActivity, mensaje, Toast.LENGTH_LONG).show()
+
+                // Limpiar sesión de caja local
+                getSharedPreferences("PuntoPeludoPrefs", MODE_PRIVATE).edit()
+                    .remove("corte_caja_id").apply()
+
+                checkEstadoCaja() // Volver al estado de "Abrir Caja"
+
+            } catch (e: Exception) {
+                Toast.makeText(this@CajaActivity, "Error al conectar: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun efectuarCierre(contado: Double) {
