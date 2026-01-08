@@ -10,14 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 class ProductoAdapter(private var lista: List<InventarioItem>) :
     RecyclerView.Adapter<ProductoAdapter.ViewHolder>() {
 
-    // 1. El "Molde" del renglón (Busca los IDs de los textos)
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvNombre: TextView = view.findViewById(R.id.textViewNombreProducto)
         val tvCantidad: TextView = view.findViewById(R.id.textViewStockBultos)
         val tvPrecio: TextView = view.findViewById(R.id.textViewStockKilos)
     }
 
-    // 2. Crea renglones vacíos cuando se necesitan
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_producto, parent, false)
@@ -27,44 +25,61 @@ class ProductoAdapter(private var lista: List<InventarioItem>) :
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = lista[position]
 
-        // A. Nombre
+        // --- A. Nombre ---
         holder.tvNombre.text = item.nombre
 
-        // B. Lógica de Conversión (Bultos vs Unidades Reales)
+        // --- B. Lógica de Conversión (Bultos vs Unidades Reales) ---
         var cantidadVisual = item.cantidad
-        var unidadVisual = item.unidadMedida
+        val unidadVisual = item.unidadMedida
 
-        // Si es Bulto/Saco, convertimos Kilos -> Paquetes
+        // Si es Bulto/Saco, la "cantidadVisual" son los paquetes, no los kilos totales
         if ((item.unidadMedida == "Bulto" || item.unidadMedida == "Saco") && item.contenidoNeto > 0) {
             cantidadVisual = item.cantidad / item.contenidoNeto
         }
 
-        // C. Formato de Texto (Quitar decimales si es Pieza)
-        val cantidadTexto = if (item.unidadMedida == "Pieza" || item.unidadMedida == "Bote" || item.unidadMedida == "Collar") {
-            // Si es pieza, lo convertimos a entero (Ej: "20" en vez de "20.0")
-            cantidadVisual.toInt().toString()
+        // --- C. Stock (Cantidad Grande) ---
+        // Lista de cosas que se cuentan por pieza entera (sin decimales)
+        val esPieza = item.unidadMedida == "Pieza" || item.unidadMedida == "Bote" ||
+                item.unidadMedida == "Collar" || item.unidadMedida == "Lata"
+
+        val cantidadTexto = if (esPieza) {
+            cantidadVisual.toInt().toString() // "20"
         } else {
-            // Si es peso o volumen, dejamos 1 decimal (Ej: "3.5")
-            String.format("%.1f", cantidadVisual)
+            String.format("%.1f", cantidadVisual) // "20.5"
         }
 
         holder.tvCantidad.text = "Stock: $cantidadTexto $unidadVisual"
 
-        // D. Alerta Visual (Rojo si queda poco)
+        // --- D. Color de Alerta ---
         if (cantidadVisual < 3.0) {
             holder.tvCantidad.setTextColor(Color.RED)
         } else {
             holder.tvCantidad.setTextColor(Color.BLACK)
         }
 
-        // E. Subtítulo Inteligente (Precio y Detalle)
-        if (item.unidadMedida == "Pieza" || item.unidadMedida == "Bote") {
-            // Si es pieza, solo mostramos el precio
+        // --- E. Subtítulo (Precio y Detalle Físico) ---
+        if (esPieza) {
+            // Si es pieza, solo precio
             holder.tvPrecio.text = "Precio: $${item.precio}"
         } else {
-            // Si es granel/bulto, mostramos el precio y el total real en kilos
-            // Esto ayuda a saber que "3.5 Bultos" son "140 kg" reales
-            holder.tvPrecio.text = "($${item.precio}) - Total Físico: ${item.cantidad} kg"
+            // AQUÍ ESTABA EL ERROR. Nueva lógica "inteligente":
+            val u = item.unidadMedida.uppercase().trim()
+
+            val sufijoReal = when {
+                // 1. Si suena a líquido -> L
+                u.contains("LITR") || u == "L" || u == "ML" || u == "LT" -> "L"
+
+                // 2. Si suena a peso/granel -> kg
+                // Nota: Incluimos BULTO y SACO aquí para que muestren el peso total en kg
+                u.contains("KILO") || u == "KG" || u == "G" || u == "BULTO" || u == "SACO" || u == "GRANEL" -> "kg"
+
+                // 3. CASO DE SEGURIDAD (Si no es ni agua ni peso)
+                // Antes aquí poníamos "kg" y por eso fallaba.
+                // Ahora ponemos la unidad real. Ej: Si la unidad es "Garrafa", dirá "Garrafa".
+                else -> item.unidadMedida
+            }
+
+            holder.tvPrecio.text = "($${item.precio}) - Total Físico: ${item.cantidad} $sufijoReal"
         }
     }
 

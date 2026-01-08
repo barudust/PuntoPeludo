@@ -19,49 +19,48 @@ class DashboardActivity : AppCompatActivity() {
 
         // 2. Botón Cerrar Sesión
         findViewById<View>(R.id.btnCerrarSesion).setOnClickListener {
-            finish() // Cierra esta pantalla
+            finish()
         }
 
+        // 3. Llamar a la navegación (Asegúrate de no repetir listeners aquí)
         setupNavegacion()
     }
 
     private fun setupNavegacion() {
-        // --- 🛒 NUEVA VENTA (AHORA SÍ FUNCIONA) ---
+        // --- 🛒 NUEVA VENTA ---
         findViewById<View>(R.id.cardNuevaVenta).setOnClickListener {
-            // Conectamos con la pantalla que acabamos de crear
-            val intent = Intent(this, VentaActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, VentaActivity::class.java))
         }
 
-        // --- ➕ CREAR PRODUCTO (Ya funcionaba) ---
+        // --- ➕ CREAR PRODUCTO ---
         findViewById<View>(R.id.cardCrearProducto).setOnClickListener {
-            val intent = Intent(this, CrearProductoActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, CrearProductoActivity::class.java))
         }
 
-
+        // --- 📦 INVENTARIO ---
         findViewById<View>(R.id.cardInventario).setOnClickListener {
             startActivity(Intent(this, InventarioActivity::class.java))
         }
 
-        // --- 🚛 SURTIR (Pendiente) ---
-        findViewById<View>(R.id.cardSurtir).setOnClickListener {
-            Toast.makeText(this, "Tu compañera debe crear SurtirActivity", Toast.LENGTH_SHORT).show()
-        }
-
-        // --- 💰 CAJA (Pendiente) ---
-        findViewById<View>(R.id.cardCaja).setOnClickListener {
-            Toast.makeText(this, "Tu compañera debe crear CajaActivity", Toast.LENGTH_SHORT).show()
-        }
-
-        // --- 👥 CLIENTES (Pendiente) ---
+        // --- 👥 CLIENTES (CORREGIDO: Ya no manda Toast, ahora abre la Activity) ---
         findViewById<View>(R.id.cardClientes).setOnClickListener {
-            Toast.makeText(this, "Falta el módulo de Clientes", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ClientesActivity::class.java))
         }
 
-        // --- 📊 REPORTES (Pendiente) ---
+        // --- 🚛 SURTIR ---
+        findViewById<View>(R.id.cardSurtir).setOnClickListener {
+            val intent = Intent(this, SurtirActivity::class.java)
+            startActivity(intent)
+        }
+
+        // --- 💰 CAJA ---
+        findViewById<View>(R.id.cardCaja).setOnClickListener {
+            Toast.makeText(this, "Módulo Caja en desarrollo", Toast.LENGTH_SHORT).show()
+        }
+
+        // --- 📊 REPORTES ---
         findViewById<View>(R.id.cardReportes).setOnClickListener {
-            Toast.makeText(this, "Falta el módulo de Reportes", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Módulo Reportes en desarrollo", Toast.LENGTH_SHORT).show()
         }
     }
 }
