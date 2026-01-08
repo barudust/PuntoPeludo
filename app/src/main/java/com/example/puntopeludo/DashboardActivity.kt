@@ -55,7 +55,8 @@ class DashboardActivity : AppCompatActivity() {
 
         // --- 💰 CAJA ---
         findViewById<View>(R.id.cardCaja).setOnClickListener {
-            Toast.makeText(this, "Módulo Caja en desarrollo", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, CajaActivity::class.java)
+            startActivity(intent)
         }
 
         // --- 📊 REPORTES ---

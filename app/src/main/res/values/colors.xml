@@ -11,5 +11,7 @@
 
     <color name="texto_principal">@color/azul_oscuro</color>
     <color name="texto_secundario">@color/azul_medio</color>
+    <color name="verde_exito">#2E7D32</color>
+
 
 </resources>

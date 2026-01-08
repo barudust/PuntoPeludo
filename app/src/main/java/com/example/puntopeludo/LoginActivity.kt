@@ -32,11 +32,20 @@ class LoginActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     // 1. Llamamos a la API
+                    // Dentro del éxito del Login
+                    // Dentro de la corrutina de éxito en LoginActivity.kt
                     val respuesta = RetrofitClient.instance.login(usuario, password)
+                    val prefs = getSharedPreferences("PuntoPeludoPrefs", MODE_PRIVATE)
+                    with(prefs.edit()) {
+                        putInt("ID_USUARIO_SESION", respuesta.usuarioId)
+                        putInt("ID_SUCURSAL_SESION", respuesta.sucursalId)
+                        putString("TOKEN_SESION", respuesta.accessToken)
+                        commit()
+                    }
 
                     // 2. Si llegamos aquí, ¡ÉXITO!
                     val token = respuesta.accessToken
-                    Toast.makeText(this@LoginActivity, "¡Login Correcto!", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(this@LoginActivity, "¡Bienvenido!", Toast.LENGTH_SHORT).show()
 
                     // TODO: Aquí guardaremos el Token en el futuro (SharedPreferences)
 

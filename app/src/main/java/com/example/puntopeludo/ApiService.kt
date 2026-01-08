@@ -130,4 +130,24 @@ interface ApiService {
     // En ApiService.kt
     @POST("ingreso-inventario/")
     suspend fun surtirProducto(@Body ingreso: IngresoInventarioIn): IngresoInventario
+    // === ENDPOINTS DE CORTE DE CAJA ===
+    @POST("corte/abrir")
+    suspend fun abrirCaja(@Body req: AperturaCajaReq): CorteResponse
+
+    @GET("corte/actual/{usuario_id}")
+    suspend fun getCorteActual(@Path("usuario_id") usuarioId: Int): CorteResponse
+
+    @POST("corte/cerrar")
+    suspend fun cerrarCaja(@Body req: CierreCajaReq): CorteResponse
+    // Endpoints de Ventas
+    @POST("ventas/") // Ajusta la ruta según tus routers de FastAPI
+    suspend fun crearVenta(@Body venta: VentaIn): VentaResponse
+
+    @POST("ventas/detalle") // Ajusta la ruta según tus routers de FastAPI
+    suspend fun registrarDetalleVenta(@Body detalle: VentaDetalleIn): Any
+    // CORRECTO PARA CAJA
+
+
+
+
 }

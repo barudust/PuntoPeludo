@@ -117,11 +117,56 @@ class VentaActivity : AppCompatActivity() {
     }
 
     private fun cobrarVenta() {
-        if (adapterCarrito.obtenerLista().isEmpty()) {
+        val prefs = getSharedPreferences("PuntoPeludoPrefs", MODE_PRIVATE)
+        val corteId = prefs.getInt("corte_caja_id", -1)
+
+        if (corteId == -1) {
+            Toast.makeText(this, "❌ Debes abrir caja antes de vender", Toast.LENGTH_LONG).show()
+            return
+        }
+
+        val listaCarrito = adapterCarrito.obtenerLista()
+        if (listaCarrito.isEmpty()) {
             Toast.makeText(this, "Carrito vacío", Toast.LENGTH_SHORT).show()
             return
         }
-        // Aquí conectaremos con el POST de ventas cuando hagamos el módulo de Caja
-        Toast.makeText(this, "Venta lista para procesar", Toast.LENGTH_SHORT).show()
+
+        lifecycleScope.launch {
+            try {
+                // Calculamos el total
+                val totalVenta = listaCarrito.sumOf { it.precioUnitario * it.cantidad }
+
+                // 1. Crear la cabecera de la venta
+                val ventaReq = VentaIn(
+                    sucursal_id = prefs.getInt("sucursal_id", 1),
+                    usuario_id = prefs.getInt("usuario_id", 1),
+                    cliente_id = clienteSeleccionadoId,
+                    corte_caja_id = corteId,
+                    total = totalVenta
+                )
+
+                val ventaRealizada = RetrofitClient.instance.crearVenta(ventaReq)
+
+                // 2. Registrar cada producto en venta_detalle
+                listaCarrito.forEach { item ->
+                    val detalle = VentaDetalleIn(
+                        venta_id = ventaRealizada.id,
+                        producto_id = item.idProducto,
+                        cantidad = item.cantidad,
+                        precio_unitario = item.precioUnitario
+                    )
+                    RetrofitClient.instance.registrarDetalleVenta(detalle)
+                }
+
+                Toast.makeText(this@VentaActivity, "✅ Venta #\${ventaRealizada.id} Exitosa", Toast.LENGTH_SHORT).show()
+                finish()
+            } catch (e: Exception) {
+                Log.e("VENTA_ERROR", "Error al cobrar: \${e.message}")
+                Toast.makeText(this@VentaActivity, "❌ Error al conectar con el servidor", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
+
+
+
 }

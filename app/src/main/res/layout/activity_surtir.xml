@@ -47,7 +47,11 @@
                 android:layout_marginTop="16dp"
                 android:hint="Cantidad (Kilos o Piezas)"
                 android:inputType="numberDecimal" />
-
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvSurtirLista"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"
+                android:layout_marginTop="10dp" />
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnConfirmarSurtir"
                 android:layout_width="match_parent"
@@ -55,6 +59,16 @@
                 android:layout_marginTop="24dp"
                 android:text="REGISTRAR ENTRADA"
                 app:backgroundTint="@color/azul_medio" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnConfirmarSurtirTodo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="CONFIRMAR TODOS LOS INGRESOS"
+                app:backgroundTint="@color/verde_exito" />
+
+
+
 
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>

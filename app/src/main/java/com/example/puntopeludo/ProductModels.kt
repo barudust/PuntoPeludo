@@ -120,4 +120,69 @@ data class IngresoInventario(
     val fecha_actualizacion: String
 )
 
+data class ProductoSurtido(
+    val id: Int,
+    val nombre: String,
+    val cantidad: Double
+)
+
+// Modelos para el Corte de Caja
+data class AperturaCajaReq(
+    val sucursal_id: Int,
+    val usuario_id: Int,
+    val fondo_inicial: Double
+)
+
+data class CierreCajaReq(
+    val corte_id: Int,
+    val efectivo_real: Double,
+    val monto_retirado: Double,
+    val comentarios: String? = null
+)
+
+data class CorteResponse(
+    val id: Int,
+    val fecha_apertura: String,
+    val fecha_cierre: String?,
+    val fondo_inicial: Double,
+    val ventas_totales: Double,
+    val efectivo_esperado: Double,
+    val efectivo_real: Double?,
+    val diferencia: Double?,
+    val fondo_siguiente: Double?,
+    val estado: String // "ABIERTO" o "CERRADO"
+)
+
+
+// En ProductModels.kt
+data class LoginResponse(
+    @SerializedName("access_token") val accessToken: String,
+    @SerializedName("usuario_id") val usuarioId: Int,   // Debe ser igual al de Python
+    @SerializedName("sucursal_id") val sucursalId: Int  // Debe ser igual al de Python
+)
+
+// Modelos para el proceso de Venta
+data class VentaIn(
+    val sucursal_id: Int,
+    val usuario_id: Int,
+    val cliente_id: Int? = null,
+    val corte_caja_id: Int? = null,
+    val total: Double,
+    @SerializedName("descuento_especial_monto") val descuentoEspecialMonto: Double = 0.0,
+    @SerializedName("descuento_especial_motivo") val descuentoEspecialMotivo: String? = null
+)
+
+data class VentaResponse(
+    val id: Int,
+    val fecha: String,
+    val total: Double
+)
+
+data class VentaDetalleIn(
+    val venta_id: Int,
+    val producto_id: Int,
+    val cantidad: Double,
+    val precio_unitario: Double
+)
+
 typealias Producto = ProductoResponse
