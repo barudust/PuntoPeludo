@@ -1,9 +1,9 @@
 package com.example.puntopeludo
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.text.InputType
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
@@ -17,6 +17,7 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.android.material.materialswitch.MaterialSwitch
 import kotlinx.coroutines.launch
 
 class InventarioActivity : AppCompatActivity() {
@@ -25,7 +26,12 @@ class InventarioActivity : AppCompatActivity() {
     private lateinit var progressBar: ProgressBar
     private lateinit var searchView: SearchView
 
+    // Listas maestras para filtros y traducción (Mapas ID -> Nombre)
     private var listaProductosGlobal: List<ProductoResponse> = emptyList()
+    private var mapaMarcas = mapOf<Int, String>()
+    private var mapaCategorias = mapOf<Int, String>()
+    private var mapaEspecies = mapOf<Int, String>()
+
     private var configFiltros = FiltrosInventario()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,12 +47,8 @@ class InventarioActivity : AppCompatActivity() {
         }
 
         findViewById<ImageButton>(R.id.btnFiltros).setOnClickListener {
-            try {
-                mostrarPanelFiltrosCompleto()
-            } catch (e: Exception) {
-                Toast.makeText(this, "Error al abrir filtros: ${e.message}", Toast.LENGTH_SHORT).show()
-                e.printStackTrace()
-            }
+            try { mostrarPanelFiltrosCompleto() }
+            catch (e: Exception) { Toast.makeText(this, "Error filtros", Toast.LENGTH_SHORT).show() }
         }
 
         progressBar = findViewById(R.id.progressBar)
@@ -71,91 +73,118 @@ class InventarioActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        cargarDatos()
+        cargarDatosCompletos()
     }
 
-    private fun cargarDatos() {
+    private fun cargarDatosCompletos() {
         progressBar.visibility = View.VISIBLE
         lifecycleScope.launch {
             try {
-                val productos = RetrofitClient.instance.obtenerProductos()
+                // 1. Cargar Catálogos para Nombres Reales
+                val marcas = RetrofitClient.instance.getMarcas()
+                mapaMarcas = marcas.associate { it.id to it.nombre }
+
+                val categorias = RetrofitClient.instance.getCategorias()
+                mapaCategorias = categorias.associate { it.id to it.nombre }
+
+                val especies = RetrofitClient.instance.getEspecies()
+                mapaEspecies = especies.associate { it.id to it.nombre }
+
+                // 2. Cargar TODOS los productos (Activos y Eliminados)
+                // Al pasar true, traemos la "Papelera" también para filtrarla localmente
+                val productos = RetrofitClient.instance.obtenerProductos(mostrarInactivos = true)
                 listaProductosGlobal = productos
-                adapter.setProductos(productos)
+
+                // 3. Configurar adaptador
+                adapter.setDatos(productos, mapaMarcas, mapaCategorias, mapaEspecies)
                 adapter.actualizarFiltros(configFiltros)
+
             } catch (e: Exception) {
-                Toast.makeText(this@InventarioActivity, "Error de red: ${e.message}", Toast.LENGTH_SHORT).show()
+                Log.e("INVENTARIO", "Error: ${e.message}")
+                Toast.makeText(this@InventarioActivity, "Error al cargar datos", Toast.LENGTH_SHORT).show()
             } finally {
                 progressBar.visibility = View.GONE
             }
         }
     }
 
-    // --- PANEL DE FILTROS COMPLETO ---
     private fun mostrarPanelFiltrosCompleto() {
         val scrollView = ScrollView(this)
-        val container = LinearLayout(this)
-        container.orientation = LinearLayout.VERTICAL
-        container.setPadding(40, 20, 40, 20)
+        val container = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(40, 20, 40, 20) }
         scrollView.addView(container)
 
-        // 1. MARCAS (Dinámico)
-        container.addView(crearTituloFiltro("Marca (ID)"))
-        val cgMarca = crearChipGroup()
-        container.addView(cgMarca)
-        val marcas = listaProductosGlobal.map { if (it.marcaId != null) "ID: ${it.marcaId}" else "Sin Marca" }.distinct().sorted()
-        agregarChip(cgMarca, "Todas", configFiltros.marca)
-        marcas.forEach { agregarChip(cgMarca, it, configFiltros.marca) }
+        // 1. FILTRO PAPELERA
+        val switchInactivos = MaterialSwitch(this).apply {
+            text = "🗑️ Ver Papelera (Eliminados)"
+            textSize = 16f
+            isChecked = configFiltros.mostrarInactivos
+            setTextColor(if(isChecked) android.graphics.Color.RED else android.graphics.Color.BLACK)
+        }
+        container.addView(switchInactivos)
 
-        // 2. CATEGORÍAS (Usando Tipo Producto)
-        container.addView(crearTituloFiltro("Categoría (Tipo)"))
-        val cgCategoria = crearChipGroup()
-        container.addView(cgCategoria)
-        val categorias = listaProductosGlobal.map { it.tipoProducto ?: "Otros" }.distinct().sorted()
-        agregarChip(cgCategoria, "Todas", configFiltros.categoria)
-        categorias.forEach { agregarChip(cgCategoria, it, configFiltros.categoria) }
+        // 2. FILTROS RÁPIDOS (Granel y Bajo Stock) - ¡RECUPERADOS!
+        val switchGranel = MaterialSwitch(this).apply {
+            text = "⚖️ Solo Venta a Granel"
+            textSize = 16f
+            isChecked = configFiltros.soloGranel
+        }
+        container.addView(switchGranel)
 
-        // 3. ESPECIES (Dinámico)
-        container.addView(crearTituloFiltro("Especie (ID)"))
-        val cgEspecie = crearChipGroup()
-        container.addView(cgEspecie)
-        val especies = listaProductosGlobal.map { if (it.especieId != null) "ID: ${it.especieId}" else "Sin Especie" }.distinct().sorted()
-        agregarChip(cgEspecie, "Todos", configFiltros.especie)
-        especies.forEach { agregarChip(cgEspecie, it, configFiltros.especie) }
+        val switchBajoStock = MaterialSwitch(this).apply {
+            text = "⚠️ Solo Bajo Stock"
+            textSize = 16f
+            isChecked = configFiltros.soloBajoStock
+        }
+        container.addView(switchBajoStock)
 
-        // 4. CHECKBOXES (Opciones)
-        container.addView(crearTituloFiltro("Opciones"))
-        val cbStock = CheckBox(this).apply { text = "Solo Bajo Stock"; isChecked = configFiltros.soloBajoStock }
-        val cbGranel = CheckBox(this).apply { text = "Solo a Granel"; isChecked = configFiltros.soloGranel }
-        container.addView(cbStock)
-        container.addView(cbGranel)
-
-        // 5. ORDENAMIENTO
-        container.addView(crearTituloFiltro("Ordenar"))
+        // 3. ORDENAMIENTO - ¡RECUPERADO!
+        container.addView(crearTituloFiltro("Ordenar por:"))
         val cgOrden = crearChipGroup()
         container.addView(cgOrden)
-        agregarChip(cgOrden, "Normal", if(configFiltros.orden == TipoOrden.DEFECTO) "Normal" else "")
-        agregarChip(cgOrden, "Precio: Menor a Mayor", if(configFiltros.orden == TipoOrden.PRECIO_ASC) "Precio: Menor a Mayor" else "")
-        agregarChip(cgOrden, "Precio: Mayor a Menor", if(configFiltros.orden == TipoOrden.PRECIO_DESC) "Precio: Mayor a Menor" else "")
+        val opcionesOrden = listOf("Defecto", "Precio Mayor ⬆️", "Precio Menor ⬇️")
+        val mapOrden = mapOf(
+            "Defecto" to TipoOrden.DEFECTO,
+            "Precio Mayor ⬆️" to TipoOrden.PRECIO_DESC,
+            "Precio Menor ⬇️" to TipoOrden.PRECIO_ASC
+        )
+        // Selección actual
+        val actualTxt = mapOrden.entries.find { it.value == configFiltros.orden }?.key ?: "Defecto"
+        opcionesOrden.forEach { agregarChip(cgOrden, it, actualTxt) }
+
+
+        // 4. MARCAS Y CATEGORÍAS (Con nombres reales)
+        container.addView(crearTituloFiltro("Marca"))
+        val cgMarca = crearChipGroup()
+        container.addView(cgMarca)
+        val nombresMarcas = mapaMarcas.values.sorted()
+        agregarChip(cgMarca, "Todas", configFiltros.marca)
+        nombresMarcas.forEach { agregarChip(cgMarca, it, configFiltros.marca) }
+
+        container.addView(crearTituloFiltro("Categoría"))
+        val cgCategoria = crearChipGroup()
+        container.addView(cgCategoria)
+        val nombresCat = mapaCategorias.values.sorted()
+        agregarChip(cgCategoria, "Todas", configFiltros.categoria)
+        nombresCat.forEach { agregarChip(cgCategoria, it, configFiltros.categoria) }
 
         MaterialAlertDialogBuilder(this)
-            .setTitle("Filtros")
+            .setTitle("Filtros Avanzados")
             .setView(scrollView)
             .setPositiveButton("Aplicar") { _, _ ->
+                // Actualizar configuración
+                configFiltros.mostrarInactivos = switchInactivos.isChecked
+                configFiltros.soloGranel = switchGranel.isChecked
+                configFiltros.soloBajoStock = switchBajoStock.isChecked
+
                 configFiltros.marca = obtenerTextoChip(cgMarca) ?: "Todas"
                 configFiltros.categoria = obtenerTextoChip(cgCategoria) ?: "Todas"
-                configFiltros.especie = obtenerTextoChip(cgEspecie) ?: "Todos"
-                configFiltros.soloBajoStock = cbStock.isChecked
-                configFiltros.soloGranel = cbGranel.isChecked
 
-                val ordenTxt = obtenerTextoChip(cgOrden) ?: "Normal"
-                configFiltros.orden = when {
-                    ordenTxt.contains("Menor") -> TipoOrden.PRECIO_ASC
-                    ordenTxt.contains("Mayor") -> TipoOrden.PRECIO_DESC
-                    else -> TipoOrden.DEFECTO
-                }
+                val ordenSeleccionado = obtenerTextoChip(cgOrden) ?: "Defecto"
+                configFiltros.orden = mapOrden[ordenSeleccionado] ?: TipoOrden.DEFECTO
+
                 adapter.actualizarFiltros(configFiltros)
             }
-            .setNeutralButton("Limpiar") { _, _ ->
+            .setNeutralButton("Limpiar Todo") { _, _ ->
                 configFiltros = FiltrosInventario()
                 adapter.actualizarFiltros(configFiltros)
             }
@@ -163,28 +192,18 @@ class InventarioActivity : AppCompatActivity() {
             .show()
     }
 
-    // --- HELPERS PARA CHIPS (Evitan el crash) ---
-    private fun agregarChip(grupo: ChipGroup, texto: String, filtroActual: String) {
-        // Inflamos el XML que creaste en el paso 1
-        val chip = LayoutInflater.from(this).inflate(R.layout.item_chip_filtro, grupo, false) as Chip
-        chip.text = texto
-        chip.isChecked = (texto.equals(filtroActual, ignoreCase = true))
-        grupo.addView(chip)
-    }
-
-    private fun crearChipGroup() = ChipGroup(this).apply { isSingleSelection = true }
-    private fun crearTituloFiltro(t: String) = TextView(this).apply {
-        text = t; textSize = 16f; setPadding(0, 30, 0, 10); setTypeface(null, android.graphics.Typeface.BOLD)
-    }
-    private fun obtenerTextoChip(grupo: ChipGroup): String? {
-        val id = grupo.checkedChipId
-        if (id != -1) return grupo.findViewById<Chip>(id).text.toString()
-        return null
-    }
-
-    // --- GESTIÓN DE PRODUCTO ---
     private fun mostrarOpcionesProducto(producto: ProductoResponse) {
-        val opciones = arrayOf("✏️ Ajustar Stock Rápido", "🛠️ Editar Datos", "🗑️ Eliminar Producto")
+        if (!producto.activo) {
+            MaterialAlertDialogBuilder(this)
+                .setTitle("Producto Eliminado")
+                .setMessage("¿Deseas restaurar '${producto.nombre}' al inventario activo?")
+                .setPositiveButton("♻️ Restaurar") { _, _ -> restaurarProducto(producto) }
+                .setNegativeButton("Cancelar", null)
+                .show()
+            return
+        }
+
+        val opciones = arrayOf("✏️ Ajustar Stock", "🛠️ Editar Datos Completos", "🗑️ Eliminar Producto")
         MaterialAlertDialogBuilder(this)
             .setTitle(producto.nombre)
             .setItems(opciones) { _, which ->
@@ -201,32 +220,106 @@ class InventarioActivity : AppCompatActivity() {
         val container = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL; setPadding(50, 40, 50, 20) }
 
         val inputNombre = crearInput("Nombre", producto.nombre, true)
-        val inputContenido = crearInput("Contenido Neto", producto.contenidoNeto?.toString() ?: "0", true, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
-        val inputMinimo = crearInput("Stock Mínimo (Alerta)", producto.stockMinimo?.toString() ?: "5", true, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
+        val inputContenido = crearInput("Contenido Neto", producto.contenidoNeto?.toString() ?: "1.0", true, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
+        val inputMinimo = crearInput("Stock Mínimo", producto.stockMinimo?.toString() ?: "5.0", true, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
         val inputPrecio = crearInput("Precio Base ($)", producto.precioBase.toString(), true, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
+
+        val precioGranelStr = if (producto.precioGranel != null && producto.precioGranel > 0) producto.precioGranel.toString() else ""
+        val inputGranel = crearInput("Precio Granel/Kilo ($)", precioGranelStr, true, InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL)
+
+        val switchGranel = MaterialSwitch(this).apply {
+            text = "¿Se vende a granel?"
+            isChecked = producto.esGranel
+            textSize = 16f
+            setPadding(0, 20, 0, 20)
+        }
+
+        inputGranel.visibility = if (producto.esGranel) View.VISIBLE else View.GONE
+        switchGranel.setOnCheckedChangeListener { _, isChecked ->
+            inputGranel.visibility = if (isChecked) View.VISIBLE else View.GONE
+        }
 
         container.addView(inputNombre)
         container.addView(inputContenido)
         container.addView(inputMinimo)
         container.addView(inputPrecio)
+        container.addView(switchGranel)
+        container.addView(inputGranel)
 
         MaterialAlertDialogBuilder(this)
             .setTitle("Editar ${producto.nombre}")
             .setView(container)
             .setPositiveButton("Guardar") { _, _ ->
-                val nombre = inputNombre.editText?.text.toString()
-                val contenido = inputContenido.editText?.text.toString().toDoubleOrNull() ?: 0.0
-                val minimo = inputMinimo.editText?.text.toString().toDoubleOrNull() ?: 5.0
-                val precio = inputPrecio.editText?.text.toString().toDoubleOrNull() ?: 0.0
+                val nuevoNombre = inputNombre.editText?.text.toString()
+                val nuevoContenido = inputContenido.editText?.text.toString().toDoubleOrNull() ?: 1.0
+                val nuevoMinimo = inputMinimo.editText?.text.toString().toDoubleOrNull() ?: 5.0
+                val nuevoPrecio = inputPrecio.editText?.text.toString().toDoubleOrNull() ?: 0.0
+                val nuevoPrecioGranel = inputGranel.editText?.text.toString().toDoubleOrNull()
+                val esGranel = switchGranel.isChecked
 
-                if (nombre.isNotEmpty()) {
-                    guardarEdicion(producto.id, nombre, contenido, minimo, precio)
-                }
+                guardarEdicion(producto.id, nuevoNombre, nuevoContenido, nuevoMinimo, nuevoPrecio, nuevoPrecioGranel, esGranel)
             }
             .setNegativeButton("Cancelar", null)
             .show()
     }
 
+    private fun guardarEdicion(
+        id: Int,
+        nombre: String,
+        contenido: Double,
+        minimo: Double,
+        precio: Double,
+        precioGranel: Double?,
+        esGranel: Boolean
+    ) {
+        progressBar.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            try {
+                val request = EditarProductoRequest(
+                    nombre = nombre,
+                    contenidoNeto = contenido,
+                    stockMinimo = minimo,
+                    precioBase = precio,
+                    precioGranel = precioGranel,
+                    activo = true,
+                    esGranel = esGranel
+                )
+                RetrofitClient.instance.editarProducto(id, request)
+                Toast.makeText(this@InventarioActivity, "✅ Guardado", Toast.LENGTH_SHORT).show()
+                cargarDatosCompletos()
+            } catch (e: Exception) {
+                Toast.makeText(this@InventarioActivity, "Error al guardar", Toast.LENGTH_SHORT).show()
+            } finally {
+                progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun restaurarProducto(producto: ProductoResponse) {
+        progressBar.visibility = View.VISIBLE
+        lifecycleScope.launch {
+            try {
+                val request = EditarProductoRequest(
+                    nombre = producto.nombre,
+                    contenidoNeto = producto.contenidoNeto ?: 1.0,
+                    stockMinimo = producto.stockMinimo ?: 5.0,
+                    precioBase = producto.precioBase,
+                    precioGranel = producto.precioGranel,
+                    activo = true,
+                    esGranel = producto.esGranel
+                )
+                RetrofitClient.instance.editarProducto(producto.id, request)
+                Toast.makeText(this@InventarioActivity, "✅ Restaurado", Toast.LENGTH_SHORT).show()
+                cargarDatosCompletos()
+            } catch (e: Exception) {
+                Toast.makeText(this@InventarioActivity, "Error al restaurar", Toast.LENGTH_SHORT).show()
+            } finally {
+                progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+    // --- Helpers UI ---
     private fun crearInput(hint: String, valor: String, editable: Boolean, tipo: Int = InputType.TYPE_CLASS_TEXT): TextInputLayout {
         val layout = TextInputLayout(this, null, com.google.android.material.R.style.Widget_MaterialComponents_TextInputLayout_OutlinedBox)
         layout.hint = hint
@@ -236,31 +329,22 @@ class InventarioActivity : AppCompatActivity() {
         return layout
     }
 
-    private fun guardarEdicion(id: Int, nombre: String, contenido: Double, minimo: Double, precio: Double) {
-        progressBar.visibility = View.VISIBLE
-        lifecycleScope.launch {
-            try {
-                val request = EditarProductoRequest(nombre, contenido, minimo, precio)
-                // Llamamos a la API (Recuerda que en ApiService debe tener el slash final)
-                val response = RetrofitClient.instance.editarProducto(id, request)
-
-                if(response.isSuccessful || response.code() == 200) {
-                    Toast.makeText(applicationContext, "✅ Guardado correctamente", Toast.LENGTH_SHORT).show()
-                    cargarDatos()
-                } else {
-                    Toast.makeText(applicationContext, "Error Servidor: ${response.code()}", Toast.LENGTH_LONG).show()
-                }
-            } catch (e: Exception) {
-                Toast.makeText(applicationContext, "Fallo conexión: ${e.message}", Toast.LENGTH_LONG).show()
-            } finally {
-                progressBar.visibility = View.GONE
-            }
-        }
+    private fun agregarChip(grupo: ChipGroup, texto: String, filtroActual: String) {
+        val chip = LayoutInflater.from(this).inflate(R.layout.item_chip_filtro, grupo, false) as Chip
+        chip.text = texto
+        chip.isChecked = (texto.equals(filtroActual, ignoreCase = true))
+        grupo.addView(chip)
+    }
+    private fun crearChipGroup() = ChipGroup(this).apply { isSingleSelection = true }
+    private fun crearTituloFiltro(t: String) = TextView(this).apply { text = t; textSize = 16f; setPadding(0, 30, 0, 10); setTypeface(null, android.graphics.Typeface.BOLD) }
+    private fun obtenerTextoChip(grupo: ChipGroup): String? {
+        val id = grupo.checkedChipId
+        return if (id != -1) grupo.findViewById<Chip>(id).text.toString() else null
     }
 
     private fun mostrarDialogoAjustarStock(producto: ProductoResponse) {
         val input = EditText(this).apply { inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL; hint = "Stock actual: ${producto.stock}" }
-        val container = LinearLayout(this).apply { setPadding(50,0,50,0); addView(input) } // Cambié FrameLayout a LinearLayout por simplicidad
+        val container = LinearLayout(this).apply { setPadding(50,0,50,0); addView(input) }
         MaterialAlertDialogBuilder(this).setTitle("Ajustar Stock").setView(container)
             .setPositiveButton("Guardar") { _, _ ->
                 val s = input.text.toString().toDoubleOrNull()
@@ -270,7 +354,7 @@ class InventarioActivity : AppCompatActivity() {
                         try {
                             RetrofitClient.instance.actualizarStock(producto.id, ActualizarStockRequest(s))
                             Toast.makeText(applicationContext, "Stock actualizado", Toast.LENGTH_SHORT).show()
-                            cargarDatos()
+                            cargarDatosCompletos()
                         } catch(e:Exception){Toast.makeText(applicationContext, "Error", Toast.LENGTH_SHORT).show()}
                         finally { progressBar.visibility = View.GONE }
                     }
@@ -284,7 +368,7 @@ class InventarioActivity : AppCompatActivity() {
             lifecycleScope.launch {
                 try {
                     RetrofitClient.instance.eliminarProducto(producto.id)
-                    cargarDatos()
+                    cargarDatosCompletos()
                 } catch(e:Exception){} finally { progressBar.visibility = View.GONE }
             }
         }.setNegativeButton("No", null).show()

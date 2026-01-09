@@ -43,7 +43,9 @@ data class ProductoResponse(
     @SerializedName("categoria_nombre") val categoriaNombre: String?,
     @SerializedName("especie_nombre") val especieNombre: String?,
     @SerializedName("categoria_id") val categoriaId: Int?,
-    @SerializedName("etapa_id") val etapaId: Int?
+    @SerializedName("etapa_id") val etapaId: Int?,
+    @SerializedName("activo") val activo: Boolean,
+
     )
 
 // 4. ACTUALIZAR STOCK (PATCH)
@@ -56,7 +58,11 @@ data class EditarProductoRequest(
     @SerializedName("nombre") val nombre: String,
     @SerializedName("contenido_neto") val contenidoNeto: Double,
     @SerializedName("stock_minimo") val stockMinimo: Double,
-    @SerializedName("precio_base") val precioBase: Double
+    @SerializedName("precio_base") val precioBase: Double,
+    @SerializedName("precio_granel") val precioGranel: Double? = null,
+    @SerializedName("activo") val activo: Boolean = true,
+    @SerializedName("es_granel") val esGranel: Boolean = false,
+
 )
 
 // Agrega esto en ProductoModels.kt

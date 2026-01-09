@@ -135,13 +135,38 @@ class VentaActivity : AppCompatActivity() {
     }
 
     private fun agregarAlCarrito(prod: ProductoResponse) {
-        val regla = reglasDescuento.find { it.productoId == prod.id }
-            ?: reglasDescuento.find { it.marcaId == prod.marcaId }
-            ?: reglasDescuento.find { it.clienteId != null && it.clienteId == clienteSeleccionadoId }
+        // 1. Determinar Precio Correcto (Paquete vs Granel)
+        // Si el producto es a granel y tiene precio especial, usamos ese.
+        var precioBaseCalc = prod.precioBase
+        if (prod.esGranel && prod.precioGranel != null && prod.precioGranel > 0) {
+            precioBaseCalc = prod.precioGranel
+        }
 
-        val porcentaje = regla?.descuentoPorcentaje ?: 0.0
-        val precioFinal = prod.precioBase * (1 - (porcentaje / 100))
+        // 2. BUSCADOR DE REGLAS (Lógica "Waterfall" estricta)
+        // Filtramos solo las reglas que cumplan TODAS las condiciones no nulas
+        val mejorRegla = reglasDescuento.filter { regla ->
+            // A. ¿La regla es para este producto? (O es para todos los productos)
+            val matchProducto = regla.productoId == null || regla.productoId == prod.id
 
+            // B. ¿La regla es para esta marca? (O es para todas las marcas)
+            val matchMarca = regla.marcaId == null || regla.marcaId == prod.marcaId
+
+            // C. ¿La regla es para este cliente? (O es para todos los clientes)
+            val matchCliente = regla.clienteId == null || regla.clienteId == clienteSeleccionadoId
+
+            // La regla solo es válida si CUMPLE CON TODO
+            matchProducto && matchMarca && matchCliente
+        }.sortedWith(compareByDescending<ReglaDescuento> { it.productoId != null } // Preferir regla de Producto
+            .thenByDescending { it.marcaId != null }     // Luego regla de Marca
+            .thenByDescending { it.clienteId != null }   // Luego regla de Cliente
+            .thenByDescending { it.descuentoPorcentaje } // Finalmente, la que de más %
+        ).firstOrNull()
+
+        // 3. Aplicar descuento si existe
+        val porcentaje = mejorRegla?.descuentoPorcentaje ?: 0.0
+        val precioFinal = precioBaseCalc * (1 - (porcentaje / 100))
+
+        // 4. Agregar al adaptador
         adapterCarrito.agregarProducto(ProductoCarrito(
             producto_id = prod.id,
             nombre = prod.nombre,
@@ -149,8 +174,13 @@ class VentaActivity : AppCompatActivity() {
             cantidad = 1.0,
             es_granel = prod.esGranel
         ))
+
         calcularTotal()
-        Toast.makeText(this, "${prod.nombre} agregado", Toast.LENGTH_SHORT).show()
+
+        // Feedback visual
+        if (porcentaje > 0) {
+            Toast.makeText(this, "Descuento aplicado: $porcentaje%", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun calcularTotal() {

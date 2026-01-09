@@ -18,6 +18,7 @@ data class FiltrosInventario(
     var marca: String = "Todas",
     var soloBajoStock: Boolean = false,
     var soloGranel: Boolean = false,
+    var mostrarInactivos: Boolean = false, // <--- NUEVO FILTRO
     var orden: TipoOrden = TipoOrden.DEFECTO
 )
 
@@ -31,8 +32,21 @@ class InventarioAdapter(
     private var listaMostrar = listOf<ProductoResponse>()
     private var filtrosActuales = FiltrosInventario()
 
-    fun setProductos(nuevosProductos: List<ProductoResponse>) {
-        this.listaCompleta = nuevosProductos
+    // MAPAS PARA TRADUCIR IDs a NOMBRES
+    private var mapaMarcas = mapOf<Int, String>()
+    private var mapaCategorias = mapOf<Int, String>() // Usaremos IDs reales de categoría
+    private var mapaEspecies = mapOf<Int, String>()
+
+    fun setDatos(
+        productos: List<ProductoResponse>,
+        marcas: Map<Int, String>,
+        categorias: Map<Int, String>,
+        especies: Map<Int, String>
+    ) {
+        this.listaCompleta = productos
+        this.mapaMarcas = marcas
+        this.mapaCategorias = categorias
+        this.mapaEspecies = especies
         aplicarLogicaFiltros()
     }
 
@@ -43,22 +57,27 @@ class InventarioAdapter(
 
     private fun aplicarLogicaFiltros() {
         var resultado = listaCompleta.filter { prod ->
+            // 0. Filtro de Activo/Inactivo (Papelera)
+            val estadoCoincide = if (filtrosActuales.mostrarInactivos) !prod.activo else prod.activo
+
+            if (!estadoCoincide) return@filter false
+
             val nombre = prod.nombre.lowercase()
 
             // 1. Texto
             val coincideTexto = nombre.contains(filtrosActuales.textoBusqueda.lowercase())
 
-            // 2. Especie
-            val prodEspecie = if (prod.especieId != null) "ID: ${prod.especieId}" else "Sin Especie"
-            val coincideEspecie = if (filtrosActuales.especie == "Todos") true else prodEspecie == filtrosActuales.especie
+            // 2. Especie (Usando el Mapa)
+            val nombreEspecie = mapaEspecies[prod.especieId] ?: "Sin Especie"
+            val coincideEspecie = if (filtrosActuales.especie == "Todos") true else nombreEspecie == filtrosActuales.especie
 
-            // 3. Categoría (Usando Tipo)
-            val prodCategoria = prod.tipoProducto ?: "Otros"
-            val coincideCategoria = if (filtrosActuales.categoria == "Todas") true else prodCategoria.equals(filtrosActuales.categoria, ignoreCase = true)
+            // 3. Categoría (Usando el Mapa o Tipo como fallback)
+            val nombreCategoria = mapaCategorias[prod.categoriaId] ?: (prod.tipoProducto ?: "Otros")
+            val coincideCategoria = if (filtrosActuales.categoria == "Todas") true else nombreCategoria.equals(filtrosActuales.categoria, ignoreCase = true)
 
-            // 4. Marca
-            val prodMarca = if (prod.marcaId != null) "ID: ${prod.marcaId}" else "Sin Marca"
-            val coincideMarca = if (filtrosActuales.marca == "Todas") true else prodMarca == filtrosActuales.marca
+            // 4. Marca (Usando el Mapa)
+            val nombreMarca = mapaMarcas[prod.marcaId] ?: "Sin Marca"
+            val coincideMarca = if (filtrosActuales.marca == "Todas") true else nombreMarca == filtrosActuales.marca
 
             // Alertas
             val contenido = prod.contenidoNeto ?: 1.0
@@ -91,7 +110,8 @@ class InventarioAdapter(
 
     override fun onBindViewHolder(holder: ProductoViewHolder, position: Int) {
         val item = listaMostrar[position]
-        holder.bind(item)
+        // Pasamos los mapas al ViewHolder para pintar bonito
+        holder.bind(item, mapaMarcas, mapaCategorias)
         holder.itemView.setOnClickListener { onProductoClick(item) }
     }
 
@@ -102,50 +122,60 @@ class InventarioAdapter(
         private val tvMarca = itemView.findViewById<TextView>(R.id.tvMarcaProd)
         private val tvPrecio = itemView.findViewById<TextView>(R.id.tvPrecioProd)
         private val chipStock = itemView.findViewById<Chip>(R.id.chipStock)
+        private val tvCategoria = itemView.findViewById<TextView>(R.id.tvCategoriaProd)
 
-        fun bind(item: ProductoResponse) {
+        fun bind(item: ProductoResponse, marcas: Map<Int, String>, categorias: Map<Int, String>) {
             tvNombre.text = item.nombre
-            val marcaTexto = if (item.marcaId != null) "Marca ID: ${item.marcaId}" else "Sin Marca"
-            tvMarca.text = marcaTexto
+
+            // TRADUCCIÓN DE ID A NOMBRE VISUAL
+            val nombreMarca = marcas[item.marcaId] ?: "Sin Marca"
+            tvMarca.text = "Marca: $nombreMarca"
+
+            val nombreCat = categorias[item.categoriaId] ?: (item.tipoProducto ?: "General")
+            tvCategoria.text = "Cat: $nombreCat"
 
             val format = NumberFormat.getCurrencyInstance(Locale.US)
             tvPrecio.text = format.format(item.precioBase)
 
-            // Lógica Visual
-            val rawUnidad = item.unidadMedida ?: ""
-            val u = rawUnidad.uppercase().trim()
-            val contenido = item.contenidoNeto ?: 1.0
-            val textoStock: String
-            val cantidadParaAlerta: Double
-
-            if ((u.contains("BULTO") || u.contains("SACO") || u.contains("CAJA")) && contenido > 0) {
-                val cantidadPaquetes = item.stock / contenido
-                val paquetesTxt = String.format("%.1f", cantidadPaquetes)
-                val sufijoBase = if (u.contains("CAJA")) "pzas" else "kg"
-                val stockVisual = if (u.contains("CAJA")) item.stock.toInt().toString() else item.stock.toString()
-                textoStock = "$stockVisual $sufijoBase ($paquetesTxt $rawUnidad)"
-                cantidadParaAlerta = cantidadPaquetes
-            } else if (u.contains("LITR") || u == "L" || u == "LT" || u == "ML") {
-                textoStock = "${item.stock} L"
-                cantidadParaAlerta = item.stock
-            } else if (u.contains("KILO") || u == "KG" || u == "G") {
-                textoStock = "${item.stock} kg"
-                cantidadParaAlerta = item.stock
+            // Si está eliminado, lo mostramos visualmente diferente
+            if (!item.activo) {
+                tvNombre.setTextColor(Color.GRAY)
+                tvNombre.text = "🚫 ${item.nombre} (Eliminado)"
+                chipStock.visibility = View.GONE
             } else {
-                textoStock = "${item.stock.toInt()} pzas"
-                cantidadParaAlerta = item.stock
+                tvNombre.setTextColor(Color.parseColor("#0D47A1")) // Azul default
+                chipStock.visibility = View.VISIBLE
             }
 
-            chipStock.text = textoStock
-            val minimo = item.stockMinimo ?: 5.0
+            // Lógica de Stock (Solo si activo)
+            if (item.activo) {
+                val rawUnidad = item.unidadMedida ?: ""
+                val u = rawUnidad.uppercase().trim()
+                val contenido = item.contenidoNeto ?: 1.0
+                val textoStock: String
+                val cantidadParaAlerta: Double
 
-            if (cantidadParaAlerta <= minimo) {
-                chipStock.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#D32F2F"))
-                chipStock.text = "¡Bajo! $textoStock"
-                chipStock.setTextColor(Color.WHITE)
-            } else {
-                chipStock.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#388E3C"))
-                chipStock.setTextColor(Color.WHITE)
+                if ((u.contains("BULTO") || u.contains("SACO") || u.contains("CAJA")) && contenido > 0) {
+                    val cantidadPaquetes = item.stock / contenido
+                    val paquetesTxt = String.format("%.1f", cantidadPaquetes)
+                    val sufijoBase = if (u.contains("CAJA")) "pzas" else "kg"
+                    textoStock = "${item.stock.toInt()} $sufijoBase ($paquetesTxt $rawUnidad)"
+                    cantidadParaAlerta = cantidadPaquetes
+                } else {
+                    textoStock = "${item.stock} $rawUnidad"
+                    cantidadParaAlerta = item.stock
+                }
+
+                chipStock.text = textoStock
+                val minimo = item.stockMinimo ?: 5.0
+
+                if (cantidadParaAlerta <= minimo) {
+                    chipStock.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#D32F2F"))
+                    chipStock.setTextColor(Color.WHITE)
+                } else {
+                    chipStock.chipBackgroundColor = ColorStateList.valueOf(Color.parseColor("#388E3C"))
+                    chipStock.setTextColor(Color.WHITE)
+                }
             }
         }
     }

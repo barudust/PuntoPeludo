@@ -71,7 +71,9 @@ interface ApiService {
     // En ApiService.kt
 
     @GET("productos/") // Este dices que ya funciona así
-    suspend fun obtenerProductos(): List<ProductoResponse>
+    suspend fun obtenerProductos(
+        @retrofit2.http.Query("mostrar_inactivos") mostrarInactivos: Boolean = true
+    ): List<ProductoResponse>
 
     // En ApiService.kt
     @PUT("productos/{id}/") // Usamos la diagonal para evitar el redireccionamiento 307

@@ -34,7 +34,10 @@ class CrearProductoActivity : AppCompatActivity() {
     private lateinit var spCategoria: AutoCompleteTextView
     private lateinit var spEspecie: AutoCompleteTextView
     private lateinit var spEtapa: AutoCompleteTextView
+
+    // ESTA ERA LA QUE FALTABA CONFIGURAR
     private lateinit var spUnidad: AutoCompleteTextView
+
     private lateinit var btnEditTipo: com.google.android.material.button.MaterialButton
     private lateinit var btnEditMarca: com.google.android.material.button.MaterialButton
     private lateinit var btnEditCategoria: com.google.android.material.button.MaterialButton
@@ -82,16 +85,18 @@ class CrearProductoActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // 1. PRIMERO inflar la vista
         setContentView(R.layout.activity_crear_producto)
 
-        // 2. SEGUNDO inicializar las vistas con findViewById
         inicializarVistas()
-
-        // 3. TERCERO configurar los listeners y lógica
         configurarListenersEspeciales()
         configurarChips()
         configurarGranel()
+
+        // --- SOLUCIÓN: Configurar la lista de UNIDADES aquí ---
+        val unidades = listOf("Pieza", "Bulto", "Kg", "Caja", "Litro")
+        val adapterUnidad = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, unidades)
+        spUnidad.setAdapter(adapterUnidad)
+        // -----------------------------------------------------
 
         // Configurar todas las listas con poder de edición (locales)
         configurarDropdownConEdicion(spTipo, btnEditTipo, listaTipos, "Tipos de Producto")
@@ -100,7 +105,6 @@ class CrearProductoActivity : AppCompatActivity() {
         configurarDropdownConEdicion(spEspecie, btnEditEspecie, listaEspecies, "Especies")
         configurarDropdownConEdicion(spEtapa, btnEditEtapa, listaEtapas, "Etapas")
 
-        // 4. CUARTO cargar los datos desde la API
         cargarDatosDesdeAPI()
 
         btnGuardar.setOnClickListener { guardarProducto() }
@@ -117,9 +121,8 @@ class CrearProductoActivity : AppCompatActivity() {
         spCategoria = findViewById(R.id.spCategoria)
         spEspecie = findViewById(R.id.spEspecie)
         spEtapa = findViewById(R.id.spEtapa)
-        spUnidad = findViewById(R.id.spUnidad)
+        spUnidad = findViewById(R.id.spUnidad) // Ya estaba vinculado, pero faltaba llenarlo
 
-        // CORRECCIÓN AQUÍ: Se vinculan como MaterialButton
         btnEditTipo = findViewById(R.id.btnEditTipo)
         btnEditMarca = findViewById(R.id.btnEditMarca)
         btnEditCategoria = findViewById(R.id.btnEditCategoria)
@@ -142,7 +145,6 @@ class CrearProductoActivity : AppCompatActivity() {
         etPrecioGranel = findViewById(R.id.etPrecioGranel)
         btnGuardar = findViewById(R.id.btnGuardar)
 
-        // El botón de volver sí es un ImageButton en el XML
         findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
     }
 
@@ -179,14 +181,12 @@ class CrearProductoActivity : AppCompatActivity() {
                 listaCategorias.addAll(cats.map { it.nombre })
                 actualizarAdapter(spCategoria, listaCategorias)
 
-                // TIPOS DE PRODUCTO (CORRECCIÓN AQUÍ)
+                // TIPOS DE PRODUCTO
                 val tiposServer = RetrofitClient.instance.getTiposProducto()
                 listaTiposObj.clear()
-                listaTiposObj.addAll(tiposServer) // Objetos con ID
+                listaTiposObj.addAll(tiposServer)
                 listaTipos.clear()
-                listaTipos.addAll(tiposServer.map { it.nombre }) // Solo los nombres (Strings)
-
-                // Limpiamos los adaptadores duplicados que tenías
+                listaTipos.addAll(tiposServer.map { it.nombre })
                 actualizarAdapter(spTipo, listaTipos)
 
                 // MARCAS
@@ -197,7 +197,7 @@ class CrearProductoActivity : AppCompatActivity() {
                 listaMarcas.addAll(marcas.map { it.nombre })
                 actualizarAdapter(spMarca, listaMarcas)
 
-                // CARGAR ESPECIES
+                // ESPECIES
                 val especiesServer = RetrofitClient.instance.getEspecies()
                 listaEspeciesObj.clear()
                 listaEspeciesObj.addAll(especiesServer)
@@ -205,7 +205,7 @@ class CrearProductoActivity : AppCompatActivity() {
                 listaEspecies.addAll(especiesServer.map { it.nombre })
                 actualizarAdapter(spEspecie, listaEspecies)
 
-                // CARGAR ETAPAS
+                // ETAPAS
                 val etapasServer = RetrofitClient.instance.getEtapas()
                 listaEtapasObj.clear()
                 listaEtapasObj.addAll(etapasServer)
@@ -275,7 +275,6 @@ class CrearProductoActivity : AppCompatActivity() {
             .setPositiveButton("Guardar en Servidor") { _, _ ->
                 val nombre = input.text.toString().trim()
                 if (nombre.isNotEmpty()) {
-                    // Ejecutamos la llamada al servidor
                     lifecycleScope.launch {
                         try {
                             when (titulo) {
@@ -299,9 +298,7 @@ class CrearProductoActivity : AppCompatActivity() {
                                     listaEtapasObj.add(nueva)
                                     lista.add(nueva.nombre)
                                 }
-                                // Busca este bloque dentro de mostrarDialogoAgregar
                                 "Tipos de Producto" -> {
-                                    // Usamos 'nombre' que ya definiste arriba con input.text.toString()
                                     if (nombre.isNotEmpty()) {
                                         val nueva = RetrofitClient.instance.crearTipoProducto(TipoProductoIn(nombre))
                                         listaTiposObj.add(nueva)
@@ -309,7 +306,7 @@ class CrearProductoActivity : AppCompatActivity() {
                                     }
                                 }
                             }
-                            onUpdate() // Actualiza el dropdown visual
+                            onUpdate()
                             Toast.makeText(this@CrearProductoActivity, "✅ $nombre guardado", Toast.LENGTH_SHORT).show()
                         } catch (e: Exception) {
                             Log.e("API_ERROR", "Error al crear atributo: ${e.message}")
@@ -351,7 +348,6 @@ class CrearProductoActivity : AppCompatActivity() {
                                         listaCategoriasObj.removeAll { it.nombre == nombreParaBorrar }
                                     }
                                     "Tipos de Producto" -> {
-                                        // Cambiamos 'it' por una variable explícita para evitar ambigüedad
                                         val match = listaTiposObj.find { tipo -> tipo.nombre == nombreParaBorrar }
                                         match?.let { tipo -> RetrofitClient.instance.eliminarTipoProducto(tipo.id) }
                                         listaTiposObj.removeAll { tipo -> tipo.nombre == nombreParaBorrar }
@@ -394,13 +390,11 @@ class CrearProductoActivity : AppCompatActivity() {
         val precioTexto = etPrecioBase.text.toString().trim()
         val contenidoTexto = etContenido.text.toString().trim()
 
-        // 1. Validaciones básicas
         if (nombre.isEmpty() || precioTexto.isEmpty() || contenidoTexto.isEmpty()) {
             Toast.makeText(this, "Faltan datos obligatorios", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // 2. Búsqueda manual de IDs (por si el click listener no se activó)
         if (idMarcaSeleccionada == null && spMarca.text.isNotEmpty()) {
             idMarcaSeleccionada = listaMarcasObj.find { it.nombre == spMarca.text.toString() }?.id
         }
@@ -414,15 +408,12 @@ class CrearProductoActivity : AppCompatActivity() {
             idEtapaSeleccionada = listaEtapasObj.find { it.nombre == spEtapa.text.toString() }?.id
         }
 
-        // 3. Preparar valores numéricos y por defecto
         val precioBaseVal = precioTexto.toDoubleOrNull() ?: 0.0
         val contenidoVal = contenidoTexto.toDoubleOrNull() ?: 1.0
         val precioGranelVal = etPrecioGranel.text.toString().toDoubleOrNull()
         val stockMinVal = etStockMinimo.text.toString().toDoubleOrNull() ?: 5.0
         val tipoFinal = if (spTipo.text.toString().isEmpty()) "Alimento" else spTipo.text.toString()
 
-        // 4. Crear el Request (Aquí es donde daban los errores)
-        // Asegúrate de usar los nombres exactos: unidadMedida, precioBase, etc.
         val request = CrearProductoRequest(
             nombre = nombre,
             tipoProducto = tipoFinal,
@@ -438,7 +429,6 @@ class CrearProductoActivity : AppCompatActivity() {
             stockMinimo = stockMinVal
         )
 
-        // 5. Envío al servidor
         lifecycleScope.launch {
             try {
                 Log.d("API_DEBUG", "Enviando JSON: ${com.google.gson.Gson().toJson(request)}")
@@ -451,5 +441,4 @@ class CrearProductoActivity : AppCompatActivity() {
             }
         }
     }
-
 }
