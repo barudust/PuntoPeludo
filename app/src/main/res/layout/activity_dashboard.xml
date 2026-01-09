@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,148 +6,207 @@
     android:background="@drawable/gradient_background"
     tools:context=".DashboardActivity">
 
-    <!-- 1. ENCABEZADO DE USUARIO E INFORMACIÓN -->
-
-    <TextView
-        android:id="@+id/tvUserInfo"
+    <!-- ENCABEZADO MEJORADO -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardHeader"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="28dp"
-        android:layout_marginEnd="16dp"
-        android:textColor="@color/white"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/tvSucursalInfo"
-        app:layout_constraintEnd_toStartOf="@+id/btnCerrarSesion"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginEnd="20dp"
+        app:cardBackgroundColor="#1AFFFFFF"
+        app:cardCornerRadius="20dp"
+        app:cardElevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_chainStyle="packed"
-        tools:text="¡Bienvenido!" />
+        app:strokeWidth="0dp">
 
-    <TextView
-        android:id="@+id/tvSucursalInfo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="📍 Sucursal Centro"
-        android:textColor="@color/white"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@+id/cardNuevaVenta"
-        app:layout_constraintEnd_toEndOf="@id/tvUserInfo"
-        app:layout_constraintStart_toStartOf="@id/tvUserInfo"
-        app:layout_constraintTop_toBottomOf="@id/tvUserInfo" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="20dp">
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnCerrarSesion"
-        style="@style/Widget.Material3.Button.IconButton.Filled.Tonal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:contentDescription="Cerrar Sesión"
-        app:backgroundTint="#88547792"
-        app:icon="@drawable/off_on_power"
-        app:iconTint="@color/white"
-        app:layout_constraintBottom_toBottomOf="@id/tvUserInfo"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tvUserInfo" />
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
 
+                <TextView
+                    android:id="@+id/tvUserInfo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:textColor="@color/white"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    tools:text="¡Bienvenido, Juan!" />
 
-    <!-- 2. BOTÓN PRINCIPAL DE ACCIÓN: NUEVA VENTA -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="#40FFFFFF"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="12dp"
+                    android:paddingVertical="6dp"
+                    app:cardCornerRadius="12dp">
 
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_marginEnd="6dp"
+                        android:contentDescription="Ubicación"
+                        android:src="@drawable/location"
+                        app:tint="@color/white" />
+
+                    <TextView
+                        android:id="@+id/tvSucursalInfo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/white"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        tools:text="Sucursal Centro" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ========= INICIO DE LA CORRECCIÓN DEL BOTÓN DE SALIR ========= -->
+            <ImageButton
+                android:id="@+id/btnCerrarSesion"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:background="@drawable/circle_button_background"
+                android:contentDescription="Cerrar Sesión"
+                android:elevation="4dp"
+                android:padding="14dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/off_on_power"
+                app:tint="@color/white" />
+            <!-- ========= FIN DE LA CORRECCIÓN DEL BOTÓN DE SALIR ========= -->
+
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- BOTÓN PRINCIPAL: NUEVA VENTA -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cardNuevaVenta"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="24dp"
         android:clickable="true"
         android:focusable="true"
         app:cardBackgroundColor="@color/azul_medio"
-        app:cardCornerRadius="20dp"
-        app:layout_constraintBottom_toTopOf="@+id/gridContainer"
-        app:layout_constraintDimensionRatio="2:1"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvSucursalInfo">
+        app:layout_constraintTop_toBottomOf="@id/cardHeader"
+        app:strokeWidth="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingVertical="16dp">
 
-            <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/shopping_cart_svgrepo_com"
-                app:tint="@color/white"
-                tools:ignore="ContentDescription" />
+            <FrameLayout
+                android:layout_width="64dp"
+                android:layout_height="64dp">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/circle_badge" />
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Nueva Venta"
+                    android:src="@drawable/shopping_cart_svgrepo_com"
+                    app:tint="@color/white" />
+            </FrameLayout>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
+                android:fontFamily="sans-serif-medium"
                 android:text="Nueva Venta"
                 android:textColor="@color/white"
-                android:textSize="20sp"
+                android:textSize="22sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Iniciar proceso de venta"
+                android:textColor="#E0FFFFFF"
+                android:textSize="13sp" />
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- 3. CUADRÍCULA DE OPCIONES SECUNDARIAS -->
-
-    <ScrollView
-        android:id="@+id/gridContainer"
-        android:layout_width="0dp"
+    <!-- CUADRÍCULA DE OPCIONES -->
+    <TextView
+        android:id="@+id/tvMenuLabel"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:overScrollMode="never"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        android:fontFamily="sans-serif-medium"
+        android:text="Menú Principal"
+        android:textColor="@color/white"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardNuevaVenta" />
+
+    <!-- ========= INICIO DE LA CORRECCIÓN DEL SCROLL DEL MENÚ ========= -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/cardNuevaVenta"
-        app:layout_constraintStart_toStartOf="@id/cardNuevaVenta"
-        app:layout_constraintTop_toBottomOf="@id/cardNuevaVenta">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvMenuLabel">
 
         <GridLayout
+            android:id="@+id/gridContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:alignmentMode="alignMargins"
             android:columnCount="2"
-            android:useDefaultMargins="true">
+            android:paddingHorizontal="12dp"
+            android:paddingBottom="16dp">
 
             <!-- Fila 1 -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardInventario"
-                style="@style/DashboardCardStyle"
-                android:layout_width="134dp">
-
-                <LinearLayout
-                    style="@style/DashboardCardContent"
-                    android:layout_width="179dp">
-
-                    <ImageView
-                        style="@style/DashboardCardIcon"
-                        android:src="@drawable/box_open_2_svgrepo_com" />
-
-                    <TextView
-                        style="@style/DashboardCardText"
-                        android:text="Inventario" />
+                style="@style/DashboardCardStyle">
+                <LinearLayout style="@style/DashboardCardContent">
+                    <ImageView style="@style/DashboardCardIcon" android:src="@drawable/box_open_2_svgrepo_com" />
+                    <TextView style="@style/DashboardCardText" android:text="Inventario" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardSurtir"
                 style="@style/DashboardCardStyle">
-
                 <LinearLayout style="@style/DashboardCardContent">
-
-                    <ImageView
-                        style="@style/DashboardCardIcon"
-                        android:layout_width="50dp"
-                        android:layout_height="50dp"
-                        android:src="@drawable/car_delivery" />
-
-                    <TextView
-                        style="@style/DashboardCardText"
-                        android:text="Surtir" />
+                    <ImageView style="@style/DashboardCardIcon" android:src="@drawable/car_delivery" />
+                    <TextView style="@style/DashboardCardText" android:text="Surtir" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -156,32 +214,18 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardCaja"
                 style="@style/DashboardCardStyle">
-
                 <LinearLayout style="@style/DashboardCardContent">
-
-                    <ImageView
-                        style="@style/DashboardCardIcon"
-                        android:src="@drawable/money_bag_svgrepo_com" />
-
-                    <TextView
-                        style="@style/DashboardCardText"
-                        android:text="Caja" />
+                    <ImageView style="@style/DashboardCardIcon" android:src="@drawable/money_bag_svgrepo_com" />
+                    <TextView style="@style/DashboardCardText" android:text="Caja" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardCrearProducto"
                 style="@style/DashboardCardStyle">
-
                 <LinearLayout style="@style/DashboardCardContent">
-
-                    <ImageView
-                        style="@style/DashboardCardIcon"
-                        android:src="@drawable/add_svgrepo_com" />
-
-                    <TextView
-                        style="@style/DashboardCardText"
-                        android:text="Crear Producto" />
+                    <ImageView style="@style/DashboardCardIcon" android:src="@drawable/add_svgrepo_com" />
+                    <TextView style="@style/DashboardCardText" android:text="Crear Producto" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
@@ -189,37 +233,24 @@
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardClientes"
                 style="@style/DashboardCardStyle">
-
                 <LinearLayout style="@style/DashboardCardContent">
-
-                    <ImageView
-                        style="@style/DashboardCardIcon"
-                        android:src="@drawable/user_pen_svgrepo_com" />
-
-                    <TextView
-                        style="@style/DashboardCardText"
-                        android:text="Clientes" />
+                    <ImageView style="@style/DashboardCardIcon" android:src="@drawable/user_pen_svgrepo_com" />
+                    <TextView style="@style/DashboardCardText" android:text="Clientes" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardReportes"
                 style="@style/DashboardCardStyle">
-
                 <LinearLayout style="@style/DashboardCardContent">
-
-                    <ImageView
-                        style="@style/DashboardCardIcon"
-                        android:src="@drawable/paper_svgrepo_com" />
-
-                    <TextView
-                        style="@style/DashboardCardText"
-                        android:text="Reportes" />
+                    <ImageView style="@style/DashboardCardIcon" android:src="@drawable/paper_svgrepo_com" />
+                    <TextView style="@style/DashboardCardText" android:text="Reportes" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
         </GridLayout>
-    </ScrollView>
+
+    </androidx.core.widget.NestedScrollView>
+    <!-- ========= FIN DE LA CORRECCIÓN DEL SCROLL DEL MENÚ ========= -->
 
 </androidx.constraintlayout.widget.ConstraintLayout>
-

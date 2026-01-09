@@ -2,7 +2,7 @@
 <resources>
     <style name="Widget.App.TextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
         <item name="boxStrokeColor">@color/azul_oscuro</item>
-        <item name="hintTextColor">@color/azul_medio</item>
+        <item name="hintTextColor">@color/azul_claro</item>
     </style>
 
     <!-- Estilo base para las tarjetas del Dashboard -->

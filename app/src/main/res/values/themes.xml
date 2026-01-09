@@ -13,7 +13,7 @@
         <item name="colorOnSecondary">@color/black</item>
 
         <!-- Color de fondo de la aplicación -->
-        <item name="android:colorBackground">@color/azul_claro</item>
+        <item name="android:colorBackground">@color/azul_medio</item>
 
         <!-- Customize your light theme here. -->
     </style>

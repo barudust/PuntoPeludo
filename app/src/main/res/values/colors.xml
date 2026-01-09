@@ -4,9 +4,9 @@
     <color name="white">#FFFFFFFF</color>
 
 
-    <color name="azul_oscuro">#0D47A1</color>
-    <color name="azul_medio">#1976D2</color>
-    <color name="azul_claro">#BBDEFB</color>
+    <color name="azul_oscuro">#061E29</color>
+    <color name="azul_medio">#1D546D</color>
+    <color name="azul_claro">#C7E3F0</color>
     <color name="crema">#EAE0CF</color>
 
     <color name="texto_principal">@color/azul_oscuro</color>

@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F5F5"
+    android:background="@drawable/gradient_background"
     tools:context=".InventarioActivity">
 
     <ImageButton
@@ -16,16 +15,17 @@
         android:layout_marginTop="16dp"
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="Volver"
-        android:src="@android:drawable/ic_menu_revert"
+        android:src="@drawable/back_svgrepo_com"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/azul_medio" />
+        app:tint="@color/white" />
+
     <TextView
         android:id="@+id/textViewTituloInventario"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Gestión de Inventario"
-        android:textColor="#333333"
+        android:textColor="@color/white"
         android:textSize="22sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btnBack"
@@ -58,9 +58,9 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:background="@null"
                 android:iconifiedByDefault="false"
-                android:queryHint="Buscar..."
-                android:background="@null" />
+                android:queryHint="Buscar..." />
 
             <ImageButton
                 android:id="@+id/btnFiltros"
@@ -69,7 +69,7 @@
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:contentDescription="Filtros"
                 android:padding="8dp"
-                android:src="@android:drawable/ic_menu_sort_by_size"
+                android:src="@drawable/filter_svgrepo"
                 app:tint="@color/azul_medio" />
 
         </LinearLayout>
