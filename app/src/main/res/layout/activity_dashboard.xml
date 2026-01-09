@@ -194,10 +194,20 @@
             <!-- Fila 1 -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardInventario"
-                style="@style/DashboardCardStyle">
-                <LinearLayout style="@style/DashboardCardContent">
-                    <ImageView style="@style/DashboardCardIcon" android:src="@drawable/box_open_2_svgrepo_com" />
-                    <TextView style="@style/DashboardCardText" android:text="Inventario" />
+                style="@style/DashboardCardStyle"
+                android:layout_width="132dp">
+
+                <LinearLayout
+                    style="@style/DashboardCardContent"
+                    android:layout_width="191dp">
+
+                    <ImageView
+                        style="@style/DashboardCardIcon"
+                        android:src="@drawable/box_open_2_svgrepo_com" />
+
+                    <TextView
+                        style="@style/DashboardCardText"
+                        android:text="Inventario" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
