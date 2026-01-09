@@ -12,7 +12,7 @@
         android:id="@+id/cardLogo"
         android:layout_width="120dp"
         android:layout_height="120dp"
-        app:cardBackgroundColor="@color/transparent"
+        app:cardBackgroundColor="#00FFFFFF"
         app:cardCornerRadius="60dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toTopOf="@+id/textViewTitle"

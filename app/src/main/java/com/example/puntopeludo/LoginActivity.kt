@@ -2,7 +2,6 @@ package com.example.puntopeludo
 
 import android.content.Intent
 import android.os.Bundle
-import android.widget.TextView // Importante para el TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -10,35 +9,38 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
 
+
 class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // CAMBIO: Referencias actualizadas a los nuevos componentes
-        val etUsuario = findViewById<TextInputEditText>(R.id.editTextUsuario)
-        val etPassword = findViewById<TextInputEditText>(R.id.editTextPassword)
-        val btnIngresar = findViewById<MaterialButton>(R.id.buttonLogin)
-        val tvRegisterPrompt = findViewById<TextView>(R.id.tvRegisterPrompt) // AÑADIDO
+        // 1. Referencias actualizadas para que coincidan con el nuevo XML
+        val etUsername = findViewById<TextInputEditText>(R.id.editTextUsername) // ID Corregido
+        val etPassword = findViewById<TextInputEditText>(R.id.editTextPassword) // ID Corregido
+        val btnLogin = findViewById<MaterialButton>(R.id.buttonLogin)
+        val btnGoToRegister = findViewById<MaterialButton>(R.id.btnGoToRegister) // ID del nuevo botón
 
-        btnIngresar.setOnClickListener {
-            val usuario = etUsuario.text.toString()
-            val password = etPassword.text.toString()
+        // 2. Listener del botón de "Iniciar Sesión" (lógica de login)
+        btnLogin.setOnClickListener {
+            val username = etUsername.text.toString().trim()
+            val password = etPassword.text.toString().trim()
 
-            if (usuario.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Escribe correo y contraseña", Toast.LENGTH_SHORT).show()
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Por favor, ingresa usuario y contraseña", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
             lifecycleScope.launch {
                 try {
-                    val respuesta = RetrofitClient.instance.login(usuario, password)
+                    // La lógica de Retrofit y SharedPreferences se mantiene igual
+                    val respuesta = RetrofitClient.instance.login(username, password)
                     val prefs = getSharedPreferences("PuntoPeludoPrefs", MODE_PRIVATE)
                     with(prefs.edit()) {
                         putInt("ID_USUARIO_SESION", respuesta.usuarioId)
                         putInt("ID_SUCURSAL_SESION", respuesta.sucursalId)
                         putString("TOKEN_SESION", respuesta.accessToken)
-                        apply() // Usa apply() en lugar de commit() para operación asíncrona
+                        apply()
                     }
 
                     Toast.makeText(this@LoginActivity, "¡Bienvenido!", Toast.LENGTH_SHORT).show()
@@ -54,8 +56,8 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // AÑADIDO: Listener para navegar a la pantalla de registro
-        tvRegisterPrompt.setOnClickListener {
+        // 3. Listener para el botón "Crear una cuenta" que navega a la pantalla de registro
+        btnGoToRegister.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
