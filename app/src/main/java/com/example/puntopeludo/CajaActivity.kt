@@ -149,12 +149,48 @@ class CajaActivity : AppCompatActivity() {
     }
 
     private fun actualizarUI(abierta: Boolean, corte: CorteResponse?) {
+        // 1. Visibilidad de las tarjetas
         findViewById<View>(R.id.cardAbrirCaja).visibility = if (abierta) View.GONE else View.VISIBLE
         findViewById<View>(R.id.cardResumenCaja).visibility = if (abierta) View.VISIBLE else View.GONE
 
         corte?.let {
-            findViewById<TextView>(R.id.tvVentasTotales).text = "Ventas acumuladas: $${it.ventas_totales}"
-            findViewById<TextView>(R.id.tvEfectivoEsperado).text = "Total esperado: $${it.efectivo_esperado}"
+            // Usamos Locale.US para que el signo de $ salga siempre bien
+            val formatMoneda = java.text.NumberFormat.getCurrencyInstance(java.util.Locale.US)
+
+            // --- FECHA Y HORA (Lo que ya funcionaba) ---
+            val rawFecha = it.fecha_apertura ?: ""
+            findViewById<TextView>(R.id.tvFechaActual).text = if (rawFecha.length >= 10) rawFecha.take(10) else "---"
+
+            try {
+                // Buscamos la hora después de la T o el espacio
+                val horaLimpia = if (rawFecha.contains("T")) {
+                    rawFecha.substringAfter("T").take(5)
+                } else if (rawFecha.contains(" ")) {
+                    rawFecha.substringAfter(" ").take(5)
+                } else {
+                    "--:--"
+                }
+                findViewById<TextView>(R.id.tvHoraInicio).text = "Desde las $horaLimpia"
+            } catch (e: Exception) {
+                findViewById<TextView>(R.id.tvHoraInicio).text = "En curso"
+            }
+
+            // --- LOS NÚMEROS (Lo que se "rompió") ---
+            // Forzamos la conversión a Double por si llegan como String del servidor
+            try {
+                val fondo = it.fondo_inicial.toDouble()
+                val ventas = it.ventas_totales.toDouble()
+                val esperado = it.efectivo_esperado.toDouble()
+
+                findViewById<TextView>(R.id.tvFondoInicial).text = formatMoneda.format(fondo)
+                findViewById<TextView>(R.id.tvVentasTotales).text = formatMoneda.format(ventas)
+                findViewById<TextView>(R.id.tvEfectivoEsperado).text = formatMoneda.format(esperado)
+            } catch (e: Exception) {
+                // Si falla el formato, al menos ponemos el número crudo para que no salga vacío
+                findViewById<TextView>(R.id.tvFondoInicial).text = "$${it.fondo_inicial}"
+                findViewById<TextView>(R.id.tvVentasTotales).text = "$${it.ventas_totales}"
+                findViewById<TextView>(R.id.tvEfectivoEsperado).text = "$${it.efectivo_esperado}"
+            }
         }
     }
 }
