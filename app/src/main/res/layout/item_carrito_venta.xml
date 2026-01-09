@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
@@ -25,8 +26,8 @@
 
         <ImageButton
             android:id="@+id/btnMenos"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="49dp"
+            android:layout_height="49dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Restar"
             android:src="@drawable/subtraction"
@@ -39,13 +40,14 @@
             android:paddingHorizontal="4dp"
             android:text="1"
             android:textColor="@color/white"
-            android:textSize="16sp"
-            android:textStyle="bold"/>
+            android:textSize="24sp"
+            android:textStyle="bold"
+            tools:ignore="TouchTargetSizeCheck" />
 
         <ImageButton
             android:id="@+id/btnMas"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="49dp"
+            android:layout_height="49dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Sumar"
             android:src="@android:drawable/ic_input_add"

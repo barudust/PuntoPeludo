@@ -81,7 +81,7 @@
                 android:id="@+id/btnCerrarSesion"
                 android:layout_width="56dp"
                 android:layout_height="56dp"
-                android:background="@drawable/circle_button_background"
+                android:background="@color/transparent"
                 android:contentDescription="Cerrar Sesión"
                 android:elevation="4dp"
                 android:padding="14dp"
@@ -124,7 +124,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@drawable/circle_badge" />
+                    android:background="@color/transparent"/>
 
                 <ImageView
                     android:layout_width="36dp"

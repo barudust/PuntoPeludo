@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
@@ -49,11 +50,12 @@
 
         <ImageButton
             android:id="@+id/btnEliminar"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="49dp"
+            android:layout_height="49dp"
             android:background="?attr/selectableItemBackgroundBorderless"
             android:src="@android:drawable/ic_menu_delete"
-            app:tint="#D32F2F"/>
+            app:tint="#D32F2F"
+            tools:ignore="SpeakableTextPresentCheck" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>
