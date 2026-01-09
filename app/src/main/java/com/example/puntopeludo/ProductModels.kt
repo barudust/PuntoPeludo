@@ -158,7 +158,9 @@ data class CorteResponse(
 data class LoginResponse(
     @SerializedName("access_token") val accessToken: String,
     @SerializedName("usuario_id") val usuarioId: Int,   // Debe ser igual al de Python
-    @SerializedName("sucursal_id") val sucursalId: Int  // Debe ser igual al de Python
+    @SerializedName("sucursal_id") val sucursalId: Int, // Debe ser igual al de Python
+    @SerializedName("nombre") val nombre: String,           // <--- AÑADIDO
+    @SerializedName("sucursal_nombre") val sucursalNombre: String
 )
 
 
@@ -183,28 +185,47 @@ data class HistorialCorteResponse(
 
 // En ProductModels.kt - Estas son las únicas que deben existir
 data class ProductoCarrito(
-    val producto_id: Int,      // Coincide con backend
-    val nombre: String,
-    var cantidad: Double,
-    val precio_unitario: Double, // Coincide con backend
-    val es_granel: Boolean
+    @SerializedName("producto_id") val producto_id: Int,
+    @SerializedName("nombre") val nombre: String,
+    @SerializedName("cantidad") var cantidad: Double,
+    @SerializedName("precio_unitario") val precio_unitario: Double,
+    @SerializedName("es_granel") val es_granel: Boolean
 )
 
+// Sustituye estas clases en ProductModels.kt
 data class VentaIn(
-    val sucursal_id: Int,
-    val usuario_id: Int,
-    val cliente_id: Int? = null,
-    val corte_caja_id: Int? = null,
-    val total: Double,
-    val descuento_especial_monto: Double = 0.0,
-    val descuento_especial_motivo: String? = null
+    @SerializedName("sucursal_id") val sucursal_id: Int,
+    @SerializedName("usuario_id") val usuario_id: Int,
+    @SerializedName("cliente_id") val cliente_id: Int? = null,
+    @SerializedName("corte_caja_id") val corte_caja_id: Int? = null,
+    @SerializedName("total") val total: Double,
+    @SerializedName("descuento_especial_monto") val descuento_especial_monto: Double = 0.0,
+    @SerializedName("descuento_especial_motivo") val descuento_especial_motivo: String? = null
 )
 
 data class VentaDetalleIn(
-    val venta_id: Int,
-    val producto_id: Int,
-    val cantidad: Double,
-    val precio_unitario: Double
+    @SerializedName("venta_id") val venta_id: Int,
+    @SerializedName("producto_id") val producto_id: Int,
+    @SerializedName("cantidad") val cantidad: Double,
+    @SerializedName("precio_unitario") val precio_unitario: Double
 )
 
+data class VentaCompletaIn(
+    @SerializedName("venta") val venta: VentaIn,
+    @SerializedName("detalles") val detalles: List<VentaDetalleIn>
+)
+// ProductModels.kt
+data class VentaCreateReq(
+    @SerializedName("sucursal_id") val sucursal_id: Int,
+    @SerializedName("usuario_id") val usuario_id: Int,
+    @SerializedName("cliente_id") val cliente_id: Int? = null,
+    @SerializedName("detalles") val detalles: List<DetalleVentaReq>,
+    @SerializedName("descuento_especial") val descuento_especial: Double = 0.0,
+    @SerializedName("motivo_descuento") val motivo_descuento: String? = null
+)
+
+data class DetalleVentaReq(
+    @SerializedName("producto_id") val producto_id: Int,
+    @SerializedName("cantidad") val cantidad: Double
+)
 typealias Producto = ProductoResponse

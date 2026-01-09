@@ -155,6 +155,11 @@ interface ApiService {
 
     @POST("ventas/detalle")
     suspend fun registrarDetalle(@Body detalle: VentaDetalleIn): Any
+    @POST("ventas/")
+    suspend fun crearVenta(@Body ventaCompleta: VentaCompletaIn): VentaResponse
+    @POST("ventas/")
+    suspend fun registrarVenta(@Body data: VentaCreateReq): Map<String, Any>
+// Cambié el retorno a Map porque tu Python devuelve un dict personalizado
 
 
 

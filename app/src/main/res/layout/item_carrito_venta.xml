@@ -32,7 +32,7 @@
             android:src="@drawable/subtraction"
             app:tint="@color/white" />
 
-        <TextView
+        <EditText
             android:id="@+id/tvCantidad"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

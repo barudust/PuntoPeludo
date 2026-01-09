@@ -27,7 +27,7 @@ class CrearProductoActivity : AppCompatActivity() {
     private lateinit var etPrecioBase: TextInputEditText
     private lateinit var etContenido: TextInputEditText
     private lateinit var etStockMinimo: TextInputEditText
-
+    private lateinit var chipGroupAtributos: com.google.android.material.chip.ChipGroup
     // Dropdowns (Listas)
     private lateinit var spTipo: AutoCompleteTextView
     private lateinit var spMarca: AutoCompleteTextView
@@ -35,13 +35,11 @@ class CrearProductoActivity : AppCompatActivity() {
     private lateinit var spEspecie: AutoCompleteTextView
     private lateinit var spEtapa: AutoCompleteTextView
     private lateinit var spUnidad: AutoCompleteTextView
-
-    // Botones de Edición (Lápiz)
-    private lateinit var btnEditTipo: ImageButton
-    private lateinit var btnEditMarca: ImageButton
-    private lateinit var btnEditCategoria: ImageButton
-    private lateinit var btnEditEspecie: ImageButton
-    private lateinit var btnEditEtapa: ImageButton
+    private lateinit var btnEditTipo: com.google.android.material.button.MaterialButton
+    private lateinit var btnEditMarca: com.google.android.material.button.MaterialButton
+    private lateinit var btnEditCategoria: com.google.android.material.button.MaterialButton
+    private lateinit var btnEditEspecie: com.google.android.material.button.MaterialButton
+    private lateinit var btnEditEtapa: com.google.android.material.button.MaterialButton
 
     // Contenedores (Rows completas para ocultar/mostrar)
     private lateinit var rowMarca: LinearLayout
@@ -121,6 +119,7 @@ class CrearProductoActivity : AppCompatActivity() {
         spEtapa = findViewById(R.id.spEtapa)
         spUnidad = findViewById(R.id.spUnidad)
 
+        // CORRECCIÓN AQUÍ: Se vinculan como MaterialButton
         btnEditTipo = findViewById(R.id.btnEditTipo)
         btnEditMarca = findViewById(R.id.btnEditMarca)
         btnEditCategoria = findViewById(R.id.btnEditCategoria)
@@ -136,14 +135,15 @@ class CrearProductoActivity : AppCompatActivity() {
         chipCategoria = findViewById(R.id.chipCategoria)
         chipEspecie = findViewById(R.id.chipEspecie)
         chipEtapa = findViewById(R.id.chipEtapa)
+        chipGroupAtributos = findViewById(R.id.chipGroupAtributos)
 
         switchGranel = findViewById(R.id.switchGranel)
         layoutGranel = findViewById(R.id.layoutGranel)
         etPrecioGranel = findViewById(R.id.etPrecioGranel)
         btnGuardar = findViewById(R.id.btnGuardar)
 
-        val unidades = listOf("Pieza", "Kg", "Bulto", "Litro", "Caja")
-        spUnidad.setAdapter(ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, unidades))
+        // El botón de volver sí es un ImageButton en el XML
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
     }
 
     private fun configurarListenersEspeciales() {
@@ -229,7 +229,7 @@ class CrearProductoActivity : AppCompatActivity() {
 
     private fun configurarDropdownConEdicion(
         dropdown: AutoCompleteTextView,
-        botonEditar: ImageButton,
+        botonEditar: com.google.android.material.button.MaterialButton,
         listaDatos: MutableList<String>,
         titulo: String
     ) {

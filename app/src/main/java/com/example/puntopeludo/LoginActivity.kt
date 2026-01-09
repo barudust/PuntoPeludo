@@ -40,6 +40,8 @@ class LoginActivity : AppCompatActivity() {
                         putInt("ID_USUARIO_SESION", respuesta.usuarioId)
                         putInt("ID_SUCURSAL_SESION", respuesta.sucursalId)
                         putString("TOKEN_SESION", respuesta.accessToken)
+                        putString("NOMBRE_USUARIO", respuesta.nombre)
+                        putString("NOMBRE_SUCURSAL", respuesta.sucursalNombre)
                         apply()
                     }
 

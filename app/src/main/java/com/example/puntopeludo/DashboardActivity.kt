@@ -1,5 +1,6 @@
 package com.example.puntopeludo
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -13,16 +14,24 @@ class DashboardActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
 
-        // 1. Configurar textos de bienvenida
-        val tvUsuario = findViewById<TextView>(R.id.tvUserInfo)
-        tvUsuario.text = "¡Hola, Baruc!"
+        // 1. Recuperar datos de SharedPreferences (Lo que guardamos en el Login)
+        // Dentro de onCreate en DashboardActivity
+        val prefs = getSharedPreferences("PuntoPeludoPrefs", MODE_PRIVATE)
+        val nombreUser = prefs.getString("NOMBRE_USUARIO", "Usuario")
+        val nombreSuc = prefs.getString("NOMBRE_SUCURSAL", "Sucursal")
 
-        // 2. Botón Cerrar Sesión
+        findViewById<TextView>(R.id.tvUserInfo).text = "¡Hola, $nombreUser!"
+        findViewById<TextView>(R.id.tvSucursalInfo).text = nombreSuc
+
+// Botón Cerrar Sesión corregido
         findViewById<View>(R.id.btnCerrarSesion).setOnClickListener {
+            prefs.edit().clear().apply() // Borra todo
+            val intent = Intent(this, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            startActivity(intent)
             finish()
         }
 
-        // 3. Llamar a la navegación (Asegúrate de no repetir listeners aquí)
         setupNavegacion()
     }
 
@@ -34,7 +43,12 @@ class DashboardActivity : AppCompatActivity() {
 
         // --- ➕ CREAR PRODUCTO ---
         findViewById<View>(R.id.cardCrearProducto).setOnClickListener {
-            startActivity(Intent(this, CrearProductoActivity::class.java))
+            try {
+                startActivity(Intent(this, CrearProductoActivity::class.java))
+            } catch (e: Exception) {
+                // Si aquí truena, es un error interno de CrearProductoActivity
+                Toast.makeText(this, "Error al abrir: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
 
         // --- 📦 INVENTARIO ---
@@ -42,21 +56,19 @@ class DashboardActivity : AppCompatActivity() {
             startActivity(Intent(this, InventarioActivity::class.java))
         }
 
-        // --- 👥 CLIENTES (CORREGIDO: Ya no manda Toast, ahora abre la Activity) ---
+        // --- 👥 CLIENTES ---
         findViewById<View>(R.id.cardClientes).setOnClickListener {
             startActivity(Intent(this, ClientesActivity::class.java))
         }
 
         // --- 🚛 SURTIR ---
         findViewById<View>(R.id.cardSurtir).setOnClickListener {
-            val intent = Intent(this, SurtirActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, SurtirActivity::class.java))
         }
 
         // --- 💰 CAJA ---
         findViewById<View>(R.id.cardCaja).setOnClickListener {
-            val intent = Intent(this, CajaActivity::class.java)
-            startActivity(intent)
+            startActivity(Intent(this, CajaActivity::class.java))
         }
 
         // --- 📊 REPORTES ---
