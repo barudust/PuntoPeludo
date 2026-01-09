@@ -10,6 +10,8 @@ import retrofit2.http.PUT
 import retrofit2.Response // <--- ESTA FALTABA
 import retrofit2.http.DELETE // <--- ESTA FALTABA
 import retrofit2.http.PATCH // <--- ESTA FALTABA
+import retrofit2.http.Query
+
 
 interface ApiService {
     // Login
@@ -43,7 +45,8 @@ interface ApiService {
 
     @GET("unidades-medida") suspend fun getUnidadesMedida(): List<String>
 
-
+    @GET("productos/")
+    suspend fun getProductos(): List<ProductoResponse>
 
     @POST("marcas/") // Agregada /
     suspend fun crearMarca(@Body marca: MarcaIn): Marca
@@ -72,7 +75,7 @@ interface ApiService {
 
     @GET("productos/") // Este dices que ya funciona así
     suspend fun obtenerProductos(
-        @retrofit2.http.Query("mostrar_inactivos") mostrarInactivos: Boolean = true
+        @retrofit2.http.Query("mostrar_inactivos") mostrarInactivos: Boolean = false
     ): List<ProductoResponse>
 
     // En ApiService.kt
@@ -119,11 +122,11 @@ interface ApiService {
 
     @POST("descuentos/")
     suspend fun crearDescuento(@Body regla: ReglaDescuentoIn): ReglaDescuento
+    @DELETE("descuentos/{id}")
+    suspend fun eliminarRegla(@Path("id") id: Int): retrofit2.Response<Void>
 
     // Asegúrate de que este método exista para VentaActivity
 
-    @GET("productos/")
-    suspend fun getProductos(): List<ProductoResponse>
 
     @PUT("clientes/{id}")
     suspend fun actualizarCliente(@Path("id") id: Int, @Body cliente: ClienteIn): Cliente
@@ -161,8 +164,39 @@ interface ApiService {
     suspend fun crearVenta(@Body ventaCompleta: VentaCompletaIn): VentaResponse
     @POST("ventas/")
     suspend fun registrarVenta(@Body data: VentaCreateReq): Map<String, Any>
-// Cambié el retorno a Map porque tu Python devuelve un dict personalizado
 
+    // ... dentro de interface ApiService ...
 
+    // REPORTES
+    @GET("informes/reporte-ventas")
+    suspend fun getReporteVentas(
+        @Query("sucursal_id") sucursalId: Int,
+        @Query("inicio") inicio: String, // Formato YYYY-MM-DD
+        @Query("fin") fin: String
+    ): List<ReporteVentaItem>
+
+    @GET("informes/reporte-surtidos")
+    suspend fun getReporteSurtidos(
+        @Query("sucursal_id") sucursalId: Int,
+        @Query("inicio") inicio: String,
+        @Query("fin") fin: String
+    ): List<ReporteSurtidoBloque>
+
+    @GET("informes/reporte-cortes")
+    suspend fun getReporteCortes(
+        @Query("sucursal_id") sucursalId: Int,
+        @Query("inicio") inicio: String,
+        @Query("fin") fin: String
+    ): List<ReporteCorteItem>
+
+    // ... dentro de interface ApiService ...
+
+    // SUCURSALES (Para el registro)
+    @GET("sucursales/")
+    suspend fun getSucursales(): List<Sucursal>
+
+    // USUARIOS (Para registrarse)
+    @POST("usuarios/")
+    suspend fun registrarUsuario(@Body usuario: UsuarioRegistroIn): UsuarioResponse
 
 }

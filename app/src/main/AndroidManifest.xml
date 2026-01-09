@@ -43,10 +43,16 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".RegisterActivity"
+            android:exported="false" />
+        <activity
             android:name=".SurtirActivity"
             android:exported="false" />
         <activity
             android:name=".CajaActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ReportesActivity"
             android:exported="false" />
 
         <meta-data

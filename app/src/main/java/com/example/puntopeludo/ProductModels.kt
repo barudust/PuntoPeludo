@@ -195,7 +195,12 @@ data class ProductoCarrito(
     @SerializedName("nombre") val nombre: String,
     @SerializedName("cantidad") var cantidad: Double,
     @SerializedName("precio_unitario") val precio_unitario: Double,
-    @SerializedName("es_granel") val es_granel: Boolean
+    @SerializedName("es_granel") val es_granel: Boolean,
+    @SerializedName("precio_granel") val precio_granel: Double? =null,
+    @SerializedName("contenido_neto") val contenido_neto: Double? = 1.0,
+
+
+
 )
 
 // Sustituye estas clases en ProductModels.kt
@@ -232,6 +237,70 @@ data class VentaCreateReq(
 
 data class DetalleVentaReq(
     @SerializedName("producto_id") val producto_id: Int,
-    @SerializedName("cantidad") val cantidad: Double
+    @SerializedName("cantidad") val cantidad: Double,
+    @SerializedName("es_granel") val es_granel: Boolean
+)
+
+// ... (al final del archivo)
+
+// Reportes
+data class ReporteVentaItem(
+    val id: Int,
+    val fecha: String,
+    val total: Double,
+    @SerializedName("descuento_especial_monto") val descuento: Double,
+    @SerializedName("nombre_cliente") val cliente: String?,
+    @SerializedName("nombre_vendedor") val vendedor: String
+)
+
+data class ReporteSurtidoItem(
+    val id: Int,
+    val fecha: String,
+    val cantidad: Double,
+    @SerializedName("nombre_producto") val producto: String,
+    @SerializedName("unidad_medida") val unidad: String,
+    @SerializedName("usuario_nombre") val usuario: String
+)
+
+data class ReporteCorteItem(
+    val id: Int,
+    @SerializedName("fecha_apertura") val fechaApertura: String,
+    @SerializedName("fecha_cierre") val fechaCierre: String?,
+    @SerializedName("ventas_totales") val ventas: Double,
+    val diferencia: Double?,
+    @SerializedName("usuario_nombre") val usuario: String
+)
+
+data class ReporteSurtidoDetalle(
+    val producto: String,
+    val cantidad: Double,
+    val unidad: String
+)
+
+// Modelo para el Bloque Principal (la tarjeta)
+data class ReporteSurtidoBloque(
+    val fecha: String,
+    val usuario: String,
+    val items: List<ReporteSurtidoDetalle>
+)
+// Para llenar el dropdown de sucursales
+data class Sucursal(
+    val id: Int,
+    val nombre: String,
+    val direccion: String?
+)
+
+// Para enviar el registro al servidor
+data class UsuarioRegistroIn(
+    val nombre: String,
+    @SerializedName("contrasena_hash") val contrasena: String,
+    val rol: String = "Vendedor", // Por defecto creamos vendedores
+    @SerializedName("sucursal_id") val sucursalId: Int
+)
+
+data class UsuarioResponse(
+    val id: Int,
+    val nombre: String,
+    val rol: String
 )
 typealias Producto = ProductoResponse

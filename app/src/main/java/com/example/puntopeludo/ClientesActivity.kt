@@ -18,42 +18,44 @@ class ClientesActivity : AppCompatActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var adapter: ClientesAdapter
+
+    // Listas en memoria
     private var listaClientes = mutableListOf<Cliente>()
+    private var listaReglas = mutableListOf<ReglaDescuento>() // <--- AQUÍ GUARDAMOS LOS DESCUENTOS
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_clientes)
 
-        // 1. Configurar el listado (RecyclerView)
+        // 1. Configurar el listado
         recyclerView = findViewById(R.id.recyclerViewClientes)
         recyclerView.layoutManager = LinearLayoutManager(this)
 
-        // El adapter usa la función de eliminar definida abajo
         adapter = ClientesAdapter(listaClientes) { view, cliente ->
             mostrarOpcionesCliente(view, cliente)
         }
         recyclerView.adapter = adapter
 
-        // 2. Botón Volver
-        findViewById<ImageButton>(R.id.btnBack).setOnClickListener {
-            finish()
-        }
+        // 2. Botones
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<View>(R.id.fabAgregarCliente).setOnClickListener { mostrarDialogoNuevoCliente() }
 
-        // 3. Botón Agregar
-        findViewById<View>(R.id.fabAgregarCliente).setOnClickListener {
-            mostrarDialogoNuevoCliente()
-        }
-
-        cargarClientes()
+        cargarDatos()
     }
 
-    private fun cargarClientes() {
+    private fun cargarDatos() {
         lifecycleScope.launch {
             try {
-                // Llama al GET /clientes/ de tu FastAPI
+                // CORRECCIÓN: Cargamos Clientes Y Descuentos al mismo tiempo
                 val clientes = RetrofitClient.instance.getClientes()
+                val reglas = RetrofitClient.instance.getDescuentos()
+
                 listaClientes.clear()
                 listaClientes.addAll(clientes)
+
+                listaReglas.clear()
+                listaReglas.addAll(reglas)
+
                 adapter.actualizarLista(clientes)
             } catch (e: Exception) {
                 Log.e("CLIENTES_ERROR", "Error: ${e.message}")
@@ -80,7 +82,6 @@ class ClientesActivity : AppCompatActivity() {
         val inputTelefono = EditText(this).apply {
             hint = "Teléfono (10 dígitos)"
             inputType = android.text.InputType.TYPE_CLASS_PHONE
-            // LIMITACIÓN FÍSICA: No deja escribir más de 10
             filters = arrayOf(android.text.InputFilter.LengthFilter(10))
             setText(clienteAEditar?.telefono)
         }
@@ -90,11 +91,19 @@ class ClientesActivity : AppCompatActivity() {
             setText(clienteAEditar?.direccion)
         }
 
+        // CORRECCIÓN: Buscar descuento existente para este cliente
+        var descuentoActualString = ""
+        if (clienteAEditar != null) {
+            val regla = listaReglas.find { it.clienteId == clienteAEditar.id && it.activo }
+            if (regla != null) {
+                descuentoActualString = regla.descuentoPorcentaje.toString()
+            }
+        }
+
         val inputDescuento = EditText(this).apply {
-            hint = "Descuento fijo para este cliente (%)"
+            hint = "Descuento fijo (%)"
             inputType = android.text.InputType.TYPE_CLASS_NUMBER or android.text.InputType.TYPE_NUMBER_FLAG_DECIMAL
-            // Aquí podrías cargar el descuento actual si tuvieras la regla,
-            // por ahora lo dejamos para asignar uno nuevo.
+            setText(descuentoActualString) // <--- Aquí rellenamos el campo
         }
 
         layout.addView(inputNombre)
@@ -112,10 +121,7 @@ class ClientesActivity : AppCompatActivity() {
 
             if (nombre.isEmpty()) {
                 Toast.makeText(this, "El nombre es obligatorio", Toast.LENGTH_SHORT).show()
-            } else if (tel.isNotEmpty() && tel.length < 10) {
-                Toast.makeText(this, "El teléfono debe tener 10 dígitos", Toast.LENGTH_SHORT).show()
             } else {
-                // Pasamos todos los datos, incluido el ID para EDITAR
                 guardarCliente(nombre, tel, dir, descuento, clienteAEditar?.id)
             }
         }
@@ -133,26 +139,33 @@ class ClientesActivity : AppCompatActivity() {
                     notas = null
                 )
 
+                // 1. Guardar/Actualizar Cliente
                 val clienteGuardado: Cliente = if (id == null) {
                     RetrofitClient.instance.crearCliente(clienteData)
                 } else {
                     RetrofitClient.instance.actualizarCliente(id, clienteData)
                 }
 
-                // Si se ingresó un descuento, creamos la regla en el backend
+                // 2. Manejar Descuento (Borrar viejo -> Crear nuevo)
+                // Primero buscamos si ya tenía una regla vieja y la borramos para no duplicar
+                val reglaVieja = listaReglas.find { it.clienteId == clienteGuardado.id }
+                if (reglaVieja != null) {
+                    try { RetrofitClient.instance.eliminarRegla(reglaVieja.id) } catch (e:Exception){}
+                }
+
+                // Si puso un descuento válido, creamos la nueva regla
                 if (descuento > 0) {
-                    // Cambia esto dentro de guardarCliente:
                     val regla = ReglaDescuentoIn(
-                        descripcion = "Descuento especial: $nombre",
-                        descuentoPorcentaje = descuento, // Antes decía descuento_porcentaje
-                        clienteId = clienteGuardado.id,   // Antes decía cliente_id
+                        descripcion = "Desc. Cliente: $nombre",
+                        descuentoPorcentaje = descuento,
+                        clienteId = clienteGuardado.id,
                         activo = true
                     )
                     RetrofitClient.instance.crearRegla(regla)
                 }
 
                 Toast.makeText(this@ClientesActivity, "✅ Guardado correctamente", Toast.LENGTH_SHORT).show()
-                cargarClientes() // Refrescar lista
+                cargarDatos() // Recargar todo
             } catch (e: Exception) {
                 Log.e("API_ERROR", "Error: ${e.message}")
                 Toast.makeText(this@ClientesActivity, "❌ Error al guardar", Toast.LENGTH_SHORT).show()
@@ -160,16 +173,14 @@ class ClientesActivity : AppCompatActivity() {
         }
     }
 
-
     private fun eliminarCliente(cliente: Cliente) {
         lifecycleScope.launch {
             try {
-                // Llama al DELETE /clientes/{id} de tu FastAPI
                 RetrofitClient.instance.eliminarCliente(cliente.id)
-                cargarClientes()
+                cargarDatos()
                 Toast.makeText(this@ClientesActivity, "🗑️ Cliente eliminado", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Toast.makeText(this@ClientesActivity, "❌ No se pudo eliminar", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ClientesActivity, "❌ Error al eliminar", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -186,9 +197,7 @@ class ClientesActivity : AppCompatActivity() {
                     MaterialAlertDialogBuilder(this)
                         .setTitle("¿Eliminar cliente?")
                         .setMessage("Esta acción no se puede deshacer.")
-                        .setPositiveButton("Eliminar") { _, _ ->
-                            eliminarCliente(cliente)
-                        }
+                        .setPositiveButton("Eliminar") { _, _ -> eliminarCliente(cliente) }
                         .setNegativeButton("Cancelar", null)
                         .show()
                 }

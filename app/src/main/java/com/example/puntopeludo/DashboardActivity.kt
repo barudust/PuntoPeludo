@@ -73,7 +73,7 @@ class DashboardActivity : AppCompatActivity() {
 
         // --- 📊 REPORTES ---
         findViewById<View>(R.id.cardReportes).setOnClickListener {
-            Toast.makeText(this, "Módulo Reportes en desarrollo", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ReportesActivity::class.java))
         }
     }
 }

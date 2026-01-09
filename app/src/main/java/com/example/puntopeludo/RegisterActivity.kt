@@ -6,71 +6,113 @@ import android.widget.AutoCompleteTextView
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import kotlinx.coroutines.launch
 
 class RegisterActivity : AppCompatActivity() {
+
+    // Variables para manejar la selección de sucursal
+    private var listaSucursales = listOf<Sucursal>()
+    private var sucursalSeleccionadaId: Int? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register) // Conecta con tu nuevo y mejorado XML
+        setContentView(R.layout.activity_register)
 
-        // --- INICIO DE LAS CORRECCIONES ---
+        inicializarVistas()
+        cargarSucursales()
+    }
 
-        // 1. Referencias actualizadas a los campos del nuevo layout
-        val etFullName = findViewById<TextInputEditText>(R.id.editTextFullName)
-        val autoCompleteSucursal = findViewById<AutoCompleteTextView>(R.id.autoCompleteSucursal) // Campo de sucursal
+    private fun inicializarVistas() {
+        val etNombre = findViewById<TextInputEditText>(R.id.editTextFullName)
         val etPassword = findViewById<TextInputEditText>(R.id.editTextPassword)
-        val etConfirmPassword = findViewById<TextInputEditText>(R.id.editTextConfirmPassword)
-        val btnRegister = findViewById<MaterialButton>(R.id.buttonRegister)
-        val tvLoginPrompt = findViewById<MaterialButton>(R.id.tvLoginPrompt) // Es un MaterialButton ahora
-        val btnBack = findViewById<ImageButton>(R.id.btnBack) // Botón de regresar
+        val etConfirmPass = findViewById<TextInputEditText>(R.id.editTextConfirmPassword)
+        val spSucursal = findViewById<AutoCompleteTextView>(R.id.autoCompleteSucursal)
 
-        // 2. Lógica para poblar el menú desplegable de sucursales (¡IMPORTANTE!)
-        // TODO: Reemplaza esta lista de ejemplo con los datos de tu API
-        val sucursales = listOf("Sucursal Centro", "Sucursal Norte", "Sucursal Sur")
-        val adapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, sucursales)
-        autoCompleteSucursal.setAdapter(adapter)
+        // Botón Volver
+        findViewById<ImageButton>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<MaterialButton>(R.id.tvLoginPrompt).setOnClickListener { finish() }
 
-        // 3. Listener para el botón de registrarse (lógica actualizada)
-        btnRegister.setOnClickListener {
-            val fullName = etFullName.text.toString().trim()
-            val sucursal = autoCompleteSucursal.text.toString().trim() // Obtenemos el texto de la sucursal
-            val password = etPassword.text.toString().trim()
-            val confirmPassword = etConfirmPassword.text.toString().trim()
+        // Configuración del Dropdown de Sucursal
+        spSucursal.inputType = 0 // Para que no salga el teclado
+        spSucursal.setOnClickListener { spSucursal.showDropDown() }
+        spSucursal.setOnItemClickListener { parent, _, position, _ ->
+            val nombreSucursal = parent.getItemAtPosition(position) as String
+            // Buscamos el ID real basado en el nombre seleccionado
+            sucursalSeleccionadaId = listaSucursales.find { it.nombre == nombreSucursal }?.id
+        }
 
-            // Validaciones básicas actualizadas
-            if (fullName.isEmpty() || sucursal.isEmpty() || password.isEmpty() || confirmPassword.isEmpty()) {
-                Toast.makeText(this, "Por favor, llena todos los campos", Toast.LENGTH_SHORT).show()
+        // Botón Registrar
+        findViewById<MaterialButton>(R.id.buttonRegister).setOnClickListener {
+            val nombre = etNombre.text.toString().trim()
+            val pass = etPassword.text.toString().trim()
+            val confirm = etConfirmPass.text.toString().trim()
+
+            // Validaciones
+            if (nombre.isEmpty() || pass.isEmpty() || confirm.isEmpty()) {
+                Toast.makeText(this, "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            if (password.length < 6) {
-                Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            if (password != confirmPassword) {
+            if (pass != confirm) {
                 Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
 
-            // --- Lógica para registrar al usuario ---
-            // Aquí iría tu llamada a Retrofit para el endpoint de registro,
-            // enviando `fullName`, `sucursal` y `password`.
+            if (pass.length < 6) {
+                Toast.makeText(this, "La contraseña debe tener al menos 6 caracteres", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
 
-            Toast.makeText(this, "Registro exitoso para la $sucursal (simulado).", Toast.LENGTH_LONG).show()
-            finish() // Cierra la pantalla de registro y vuelve al Login
+            if (sucursalSeleccionadaId == null) {
+                Toast.makeText(this, "Debes seleccionar una sucursal existente", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            // Todo listo, enviamos al servidor
+            registrarUsuario(nombre, pass, sucursalSeleccionadaId!!)
         }
+    }
 
-        // 4. Listeners para volver a la pantalla de Login
-        tvLoginPrompt.setOnClickListener {
-            finish() // Cierra esta actividad para volver a la anterior (Login)
+    private fun cargarSucursales() {
+        lifecycleScope.launch {
+            try {
+                // Descargamos la lista REAL de sucursales
+                listaSucursales = RetrofitClient.instance.getSucursales()
+
+                // Extraemos solo los nombres para el adaptador visual
+                val nombres = listaSucursales.map { it.nombre }
+
+                val adapter = ArrayAdapter(this@RegisterActivity, android.R.layout.simple_dropdown_item_1line, nombres)
+                findViewById<AutoCompleteTextView>(R.id.autoCompleteSucursal).setAdapter(adapter)
+
+            } catch (e: Exception) {
+                Toast.makeText(this@RegisterActivity, "Error al cargar sucursales: ${e.message}", Toast.LENGTH_LONG).show()
+            }
         }
+    }
 
-        btnBack.setOnClickListener {
-            finish() // El botón de regresar también cierra la actividad
+    private fun registrarUsuario(nombre: String, pass: String, sucursalId: Int) {
+        lifecycleScope.launch {
+            try {
+                val nuevoUsuario = UsuarioRegistroIn(
+                    nombre = nombre,
+                    contrasena = pass,
+                    sucursalId = sucursalId,
+                    rol = "Vendedor" // Por defecto, o puedes agregar un selector si quieres
+                )
+
+                RetrofitClient.instance.registrarUsuario(nuevoUsuario)
+
+                Toast.makeText(this@RegisterActivity, "¡Cuenta creada! Inicia sesión.", Toast.LENGTH_LONG).show()
+                finish() // Cierra el registro y vuelve al Login
+
+            } catch (e: Exception) {
+                Toast.makeText(this@RegisterActivity, "Error al registrar: Verifica tu conexión", Toast.LENGTH_SHORT).show()
+                e.printStackTrace()
+            }
         }
-
-        // --- FIN DE LAS CORRECCIONES ---
     }
 }

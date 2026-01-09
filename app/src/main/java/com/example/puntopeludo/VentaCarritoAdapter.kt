@@ -17,7 +17,6 @@ class VentaCarritoAdapter(
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val nombre: TextView = v.findViewById(R.id.tvProductoNombre)
-        // NOTA: Debes cambiar tvCantidad a EditText en tu XML item_carrito_venta.xml
         val cantidad: EditText = v.findViewById(R.id.tvCantidad)
         val subtotal: TextView = v.findViewById(R.id.tvSubtotal)
         val btnMas: ImageButton = v.findViewById(R.id.btnMas)
@@ -31,29 +30,32 @@ class VentaCarritoAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = items[position]
-        holder.nombre.text = item.nombre
-        holder.cantidad.setText(item.cantidad.toString())
+
+        // Mostrar si es Granel o Paquete
+        val tipo = if (item.es_granel) " (Granel/Kg)" else " (Paquete)"
+        holder.nombre.text = item.nombre + tipo
+
+        // Evitamos loop infinito de listeners al reciclar
+        holder.cantidad.setOnFocusChangeListener(null)
+
+        // Formato de cantidad (quita decimales .0 si es entero)
+        if (item.cantidad % 1.0 == 0.0) {
+            holder.cantidad.setText(item.cantidad.toInt().toString())
+        } else {
+            holder.cantidad.setText(item.cantidad.toString())
+        }
 
         val totalItem = item.cantidad * item.precio_unitario
         holder.subtotal.text = String.format(Locale.US, "$%.2f", totalItem)
 
-        // Lógica de Granel: Permite decimales si el producto lo requiere
+        // Configurar teclado
         if (item.es_granel) {
             holder.cantidad.inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_DECIMAL
         } else {
             holder.cantidad.inputType = InputType.TYPE_CLASS_NUMBER
         }
 
-        // Actualizar cantidad al escribir manualmente
-        holder.cantidad.setOnFocusChangeListener { _, hasFocus ->
-            if (!hasFocus) {
-                val nuevaCant = holder.cantidad.text.toString().toDoubleOrNull() ?: 1.0
-                item.cantidad = nuevaCant
-                notifyItemChanged(position)
-                onTotalChanged()
-            }
-        }
-
+        // Listeners Botones
         holder.btnMas.setOnClickListener {
             item.cantidad += 1.0
             notifyItemChanged(position)
@@ -65,11 +67,27 @@ class VentaCarritoAdapter(
                 item.cantidad -= 1.0
                 notifyItemChanged(position)
             } else {
+                // Si es 1 o menos (ej. 0.5kg), lo borramos al presionar menos
                 items.removeAt(position)
                 notifyItemRemoved(position)
                 notifyItemRangeChanged(position, items.size)
             }
             onTotalChanged()
+        }
+
+        // Listener Texto Manual
+        holder.cantidad.setOnFocusChangeListener { _, hasFocus ->
+            if (!hasFocus) {
+                val texto = holder.cantidad.text.toString()
+                val nuevaCant = texto.toDoubleOrNull() ?: 0.0
+                if (nuevaCant > 0) {
+                    item.cantidad = nuevaCant
+                    onTotalChanged()
+                    // No llamamos notifyItemChanged aquí para no perder el foco o cerrar teclado bruscamente
+                    val nuevoTotal = item.cantidad * item.precio_unitario
+                    holder.subtotal.text = String.format(Locale.US, "$%.2f", nuevoTotal)
+                }
+            }
         }
     }
 
@@ -77,13 +95,11 @@ class VentaCarritoAdapter(
     fun obtenerLista() = items
 
     fun agregarProducto(p: ProductoCarrito) {
-        val existente = items.find { it.producto_id == p.producto_id }
-        if (existente != null) {
-            existente.cantidad += 1.0
-        } else {
-            items.add(p)
-        }
-        notifyDataSetChanged() // <--- CRÍTICO PARA QUE SE VEA EN PANTALLA
+        // SOLUCIÓN AL DOBLE AGREGADO:
+        // Aquí NO verificamos nada, confiamos ciegamente en la Activity.
+        // Y solo hacemos UN add.
+        items.add(p)
+        notifyItemInserted(items.size - 1)
         onTotalChanged()
     }
 }
